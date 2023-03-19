@@ -21,9 +21,7 @@
   <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_60">
 </script>
 <script type=module>
-  //import activityLocationData from 'http://127.0.0.1:5500/location_to_activity.json' assert {type: 'json'};
-  import activityLocationData from '/location_to_activity.json' assert {type: 'json'};
-
+  import activityLocationData from 'http://127.0.0.1:5500/location_to_activity.json' assert {type: 'json'};
   var map;
   var geoJSON;
   var request;
@@ -45,16 +43,6 @@
 
     // Sets up and populates the info window with details
     map.data.addListener('click', function(event) {
-      //TODO: print out activity contents
-
-      //  infowindow.setContent(
-      //  "<img src=" + event.feature.getProperty("icon") + ">"
-      //  + "<br /><strong>" + event.feature.getProperty("label") + "</strong>"
-      //  + "<br />" + event.feature.getProperty("temperatureF") + "&deg;F"
-      //  + "<br />" + event.feature.getProperty("windDirection") + " " + event.feature.getProperty("windSpeedMPH") + "MPH"
-      //  + "<br />" + event.feature.getProperty("weather")
-      //  + "<br />" + event.feature.getProperty("activities")
-      //  );
       var contentString = "<img src=" + event.feature.getProperty("icon") + ">"
        + "<br /><strong>" + event.feature.getProperty("label") + "</strong>";
       var validActivities = event.feature.getProperty("activities");
@@ -65,12 +53,7 @@
         })
       })
       infowindow.setContent(contentString);
-      // contentString +
-      //  + "<br />" + event.feature.getProperty("temperatureF") + "&deg;F"
-      //  + "<br />" + event.feature.getProperty("windDirection") + " " + event.feature.getProperty("windSpeedMPH") + "MPH"
-      //  + "<br />" + event.feature.getProperty("weather")
-      //  + "<br />" + event.feature.getProperty("activities")
-      // );
+
       infowindow.setOptions({
           position:{
             lat: event.latLng.lat(),
@@ -247,22 +230,32 @@
       var validActivity = {};
       // FOR EACH POSSIBLE WEATHER DETAIL
       // SEE IF WEATHER PASSES ACTIVITY THRESHOLD
+      const tolerableWindDirections = activity.weather.windDirection
       const minWindSpeed = activity.weather.minWindSpeed;
       const maxWindSpeed = activity.weather.maxWindSpeed;
       const minPressure = activity.weather.minPressure;
       const maxPressure = activity.weather.maxPressure;
 
-      //WIND
+      //WIND DIRECTION
+      if (tolerableWindDirections) {
+        if (!tolerableWindDirections.includes(windDirection)) {
+          return {};
+        } else {
+          validActivity.wind = windDirection;
+        }
+      }
+
+      //WIND SPEED
       if (minWindSpeed && maxWindSpeed) {
         if (windSpeedMPH < minWindSpeed || windSpeedMPH > maxWindSpeed) {
           return {};
         } else {
-          validActivity.wind = windDirection + " " + windSpeedMPH + " MPH";
+          validActivity.wind += windSpeedMPH + " MPH";
         }
       }
 
       //PRESSURE
-     if (minPressure && maxPressure) {
+      if (minPressure && maxPressure) {
         if (pressure < minPressure || pressure > maxPressure) {
           return {};
         } else {
