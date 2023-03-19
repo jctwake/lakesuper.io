@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather layer</title>
+  <style>
+    html, body{
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    #map-canvas {
+      width: 100%;
+      height: 100%;
+    }
+    .gm-style-iw {
+      text-align: center;
+    }
+  </style>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_60">
+</script>
+<script type=module>
+  import activityLocationData from 'http://127.0.0.1:5500/location_to_activity.json' assert {type: 'json'};
+  var map;
+  var geoJSON;
+  var request;
+  let results = [];
+  var gettingData = false;
+  var fetchMoreData = true;
+  var openWeatherMapKey = "6d055e39ee237af35ca066f35474e9df"
+
+  function initialize() {
+    var mapOptions = {
+      zoom: 9,
+      center: new google.maps.LatLng(47.3,-91)
+    };
+
+    map = new google.maps.Map(document.getElementById('map-canvas'),
+        mapOptions);
+    // Add interaction listeners to make weather requests
+    google.maps.event.addListener(map, 'idle', checkIfDataRequested);
+
+    // Sets up and populates the info window with details
+    map.data.addListener('click', function(event) {
+      //TODO: print out activity contents
+
+      //  infowindow.setContent(
+      //  "<img src=" + event.feature.getProperty("icon") + ">"
+      //  + "<br /><strong>" + event.feature.getProperty("label") + "</strong>"
+      //  + "<br />" + event.feature.getProperty("temperatureF") + "&deg;F"
+      //  + "<br />" + event.feature.getProperty("windDirection") + " " + event.feature.getProperty("windSpeedMPH") + "MPH"
+      //  + "<br />" + event.feature.getProperty("weather")
+      //  + "<br />" + event.feature.getProperty("activities")
+      //  );
+      var contentString = "<img src=" + event.feature.getProperty("icon") + ">"
+       + "<br /><strong>" + event.feature.getProperty("label") + "</strong>";
+      var validActivities = event.feature.getProperty("activities");
+      validActivities.forEach(activity => {
+        Object.keys(activity).forEach(key => {
+          var keyValString = "<br />" + activity[key];
+          contentString += keyValString;
+        })
+      })
+      infowindow.setContent(contentString);
+      // contentString +
+      //  + "<br />" + event.feature.getProperty("temperatureF") + "&deg;F"
+      //  + "<br />" + event.feature.getProperty("windDirection") + " " + event.feature.getProperty("windSpeedMPH") + "MPH"
+      //  + "<br />" + event.feature.getProperty("weather")
+      //  + "<br />" + event.feature.getProperty("activities")
+      // );
+      infowindow.setOptions({
+          position:{
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng()
+          },
+          pixelOffset: {
+            width: 0,
+            height: -15
+          }
+        });
+      infowindow.open(map);
+    });
+  }
+
+  var infowindow = new google.maps.InfoWindow();
+
+  var checkIfDataRequested = function() {
+    // Stop extra requests being sent
+    while (gettingData === true) {
+      request.abort();
+      gettingData = false;
+    }
+
+    if (fetchMoreData === true) {
+      getActivityDataFromJSON();
+    }
+  };
+
+  // Get the coordinates from the Map bounds
+  var getCoords = function() {
+    var bounds = map.getBounds();
+    var NE = bounds.getNorthEast();
+    var SW = bounds.getSouthWest();
+    getWeather(NE.lat(), NE.lng(), SW.lat(), SW.lng());
+  };
+
+  async function getActivityDataFromJSON () {
+    const promises = []
+
+    resetData();
+
+    // fire all requests
+    activityLocationData.forEach(activityLocation => promises.push(fetchDataForActivityLocation(activityLocation)));
+
+    // wait until all promises are resolved and copy responses to array
+    results = [...await Promise.all(promises)];
+
+    console.log(results) // [data, someData, otherData...] 
+
+    results.forEach(result => {
+      if (result && Object.keys(result).length > 0){
+        var geoJSONFeature = jsonToGeoJson(result);
+        if (geoJSONFeature && Object.keys(geoJSONFeature).length > 0) {
+          geoJSON.features.push(geoJSONFeature);
+        }
+      }
+     });
+     drawIcons(geoJSON);
+     fetchMoreData = false;
+  }
+
+  async function fetchDataForActivityLocation(activityLocation) {
+    const latLng = activityLocation["coordinates"];
+    const lat = latLng[0];
+    const lng = latLng[1];
+    const startMonth = activityLocation["startMonth"];
+    const endMonth = activityLocation["endMonth"];
+    const site = activityLocation["site"];
+
+    var weather = {};
+    var isValidMonth = true;
+    var siteUSGS = {};
+
+    if (startMonth && endMonth) {
+      isValidMonth = validateMonth(startMonth, endMonth);
+    }
+
+    if (!isValidMonth) {
+      return {};
+    }
+
+    // if (activityLocation["weather"]) {
+    //   weather = getWeatherLatLng(lat, lng);
+    // }
+
+    if (site && Object.keys(site).length > 0) {
+      siteUSGS = getSiteData(site);
+    }
+
+    var hydratedActivityLocation = {
+      activityLocation: activityLocation,
+      weatherItem: await getWeatherLatLng(lat, lng),
+      siteData: await siteUSGS,
+    };
+    return hydratedActivityLocation; 
+  }
+
+  var validateMonth = function(startMonth, endMonth) {
+    return true;
+  }
+
+  var getWeatherLatLng = function(lat, lng) {
+    gettingData = true;
+    var url = "https://api.openweathermap.org/data/2.5/weather?"
+    var requestString = url + "lat=" + lat + "&lon=" + lng
+                        + "&cluster=no&format=json"
+                        + "&APPID=" + openWeatherMapKey;
+    return fetch(requestString).then(res=>res.clone().json());
+  }
+
+  var getSiteData = function(site) {
+    gettingData = true;
+    const siteId = site["id"];
+    const parameterCd = site["parameterCodes"];
+    var requestString = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=" + siteId +
+    "&parameterCd=" + parameterCd + "&siteType=ST&siteStatus=all";
+    return fetch(requestString).then(res=>res.clone().json());
+  }
+
+  // For each result that comes back, convert the data to geoJSON
+  var jsonToGeoJson = function (hydratedActivityLocation) {
+    const weatherItem = hydratedActivityLocation.weatherItem;
+    var feature = {
+      type: "Feature",
+      properties: {
+        label: hydratedActivityLocation.activityLocation.name,
+        city: weatherItem.name,
+        weather: weatherItem.weather[0].main,
+        temperature: weatherItem.main.temp,
+        temperatureF: convertKelvinToFahrenheit(weatherItem.main.temp),
+        min: weatherItem.main.temp_min,
+        max: weatherItem.main.temp_max,
+        humidity: weatherItem.main.humidity,
+        pressure: weatherItem.main.pressure,
+        windSpeed: weatherItem.wind.speed,
+        windSpeedMPH: convertMetersPerSecToRoundedMPH(weatherItem.wind.speed),
+        windDegrees: weatherItem.wind.deg,
+        windDirection: convertDegreeToCompassPoint8(weatherItem.wind.deg),
+        windGust: weatherItem.wind.gust,
+        icon: "http://openweathermap.org/img/w/"
+              + weatherItem.weather[0].icon  + ".png",
+        coordinates: [weatherItem.coord.lon, weatherItem.coord.lat],
+        activities: calculateActivities(hydratedActivityLocation)
+      },
+      geometry: {
+        type: "Point",
+        coordinates: [weatherItem.coord.lon, weatherItem.coord.lat]
+      }
+    };
+    // Set the custom marker icon
+    map.data.setStyle(function(feature) {
+      return {
+        icon: {
+          url: feature.getProperty('icon'),
+          anchor: new google.maps.Point(25, 25)
+        }
+      };
+    });
+
+    // returns object
+    return feature.properties.activities.length === 0 ? {} : feature;
+  };
+
+  var calculateActivities = function(hydratedActivityLocation) {
+    var activities = [];
+    const possibleActivities = hydratedActivityLocation.activityLocation.activities;
+    const weatherItem = hydratedActivityLocation.weatherItem;
+
+    const windDirection = convertDegreeToCompassPoint8(weatherItem.wind.deg);
+    const windSpeedMPH = convertMetersPerSecToRoundedMPH(weatherItem.wind.speed);
+    const pressure = weatherItem.main.pressure;
+
+    possibleActivities.forEach(activity => {
+      var validActivity = {};
+      // FOR EACH POSSIBLE WEATHER DETAIL
+      // SEE IF WEATHER PASSES ACTIVITY THRESHOLD
+      const minWindSpeed = activity.weather.minWindSpeed;
+      const maxWindSpeed = activity.weather.maxWindSpeed;
+      const minPressure = activity.weather.minPressure;
+      const maxPressure = activity.weather.maxPressure;
+
+      //WIND
+      if (minWindSpeed && maxWindSpeed) {
+        if (windSpeedMPH < minWindSpeed || windSpeedMPH > maxWindSpeed) {
+          return {};
+        } else {
+          validActivity.wind = windDirection + " " + windSpeedMPH + " MPH";
+        }
+      }
+
+      //PRESSURE
+     if (minPressure && maxPressure) {
+        if (pressure < minPressure || pressure > maxPressure) {
+          return {};
+        } else {
+          validActivity.pressure = pressure + " kPa";
+        }
+      }
+
+      // ADD TO RESULT
+      if (activity => activity && Object.keys(activity).length > 0) {
+        validActivity.label = activity.label;
+        activities.push(validActivity)
+      }
+    });
+
+    return activities;
+  }
+
+  // Add the markers to the map
+  var drawIcons = function (geoJSON) {
+     map.data.addGeoJson(geoJSON);
+     // Set the flag to finished
+     gettingData = false;
+  };
+
+    // Clear data layer and geoJSON
+  var resetData = function () {
+    geoJSON = {
+      type: "FeatureCollection",
+      features: []
+    };
+    map.data.forEach(function(feature) {
+      map.data.remove(feature);
+    });
+    //results = [];
+  };
+
+  var convertMetersPerSecToRoundedMPH = function(mps) {
+    const mph = +((2.23694 * mps).toFixed(2));
+    return Math.round(mph);
+  }
+
+  // uses all 16 possible wind directions
+  var convertDegreeToCompassPoint16 = function(windDegrees) {
+    const compassPoints = ["N", "NNE", "NE", "ENE",
+                           "E", "ESE", "SE", "SSE",
+                           "S", "SSW", "SW", "WSW", 
+                           "W", "WNW", "NW", "NNW"];
+    const rawPosition = Math.floor((windDegrees / 22.5) + 0.5);
+    const arrayPosition = (rawPosition % 16);
+    return compassPoints[arrayPosition];
+  };
+
+  // only uses the standard 8 directions
+  var convertDegreeToCompassPoint8 = function(windDegrees) {
+    const compassPoints = ["N", "NE",
+                           "E", "SE",
+                           "S", "SW",
+                           "W", "NW"];
+    const rawPosition = Math.floor((windDegrees / 45) + 0.5);
+    const arrayPosition = (rawPosition % 8);
+    return compassPoints[arrayPosition];
+  };
+
+  var convertCelsiusToFahrenheit = function(celsius) {
+    return Math.round((celsius * 1.8) + 32);
+  }
+
+  var convertKelvinToFahrenheit = function(kelvin) {
+    return Math.round(((kelvin - 273) * 1.8) + 32);
+  }
+
+  google.maps.event.addDomListener(window, 'load', initialize);
+
+</script>
+</head>
+<body>
+
+<div id="map-canvas"></div>
+
+</body>
+</html>
