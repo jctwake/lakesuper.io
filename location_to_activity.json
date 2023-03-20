@@ -1,48 +1,18 @@
-[
-    {
-        "coordinates": [46.835869,-92.006769],
-        "name": "Lester River Surf Spot",
-        "activities": [
-            {
-                "label":"SURFING",
-                "weather" : {
-                    "minWindSpeed" : "10",
-                    "maxWindSpeed" : "25",
-                    "windDirection" : ["NNE", "NE", "ENE", "E"]
-                }
-            }
-        ]
+{
+    "coordinates": [46.717475,-92.212428],
+    "name": "Spirit Mountain",
+    "resort" : {
+        "id" : "218004"
     },
-    {
-        "coordinates": [46.952090,-92.065279],
-        "name": "Eagle Lake",
-        "activities": [
-            {
-                "label":"FISHING",
-                "startMonth" : "2",
-                "endMonth" : "11",
-                "weather" : {
-                    "minPressure" : "1000",
-                    "maxPressure" : "2500"
-                }
+    "activities": [
+        {
+            "label":"SKIING",
+            "weather" : {
+                "minPressure" : "1000",
+                "maxPressure" : "2500"
+            },
+            "resort" : {
             }
-        ]
-    },
-    {
-        "coordinates": [46.94688005,-91.7924013],
-        "name": "Knife River USGS Site",
-        "site" : {
-            "id" : "04015330",
-            "parameterCodes" : "00010,00060"
-        },
-        "activities": [
-            {
-                "label":"FISHING",
-                "weather" : {
-                    "minPressure" : "1000",
-                    "maxPressure" : "2500"
-                }
-            }
-        ]
-    }
-]
+        }
+    ]
+}
