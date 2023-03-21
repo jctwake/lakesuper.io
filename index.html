@@ -34,6 +34,8 @@
   let results = [];
   var gettingData = false;
   var fetchMoreData = true;
+  var activityHours = new Map();
+  const forecastDays = 3;
 
   function initialize() {
     var mapOptions = {
@@ -50,13 +52,11 @@
     map.data.addListener('click', function(event) {
       var contentString = "<img src=" + event.feature.getProperty("icon") + ">"
        + "<br /><strong>" + event.feature.getProperty("label") + "</strong>";
-      var validActivities = event.feature.getProperty("activities");
-      validActivities.forEach(activity => {
-        Object.keys(activity).forEach(key => {
+      var activity = event.feature.getProperty("activity");
+      Object.keys(activity).forEach(key => {
           var keyValString = "<br />" + activity[key];
           contentString += keyValString;
-        })
-      })
+        });
       infowindow.setContent(contentString);
 
       infowindow.setOptions({
@@ -92,28 +92,22 @@
     const promises = [];
     const day = 0;
     const now = new Date();
-    let hour = now.getHours();
+    let currentHour = now.getHours();
     var activityLocations = (activityLocationData && activityLocationData.length > 0) ? activityLocationData : activityLocationDataLocal;
 
     resetData();
 
     // fire all requests
     activityLocations.forEach(activityLocation => promises.push(fetchDataForActivityLocation(activityLocation)));
-    //promises.push(fetchDataForActivityLocation(activityLocations[0]));
+
     // wait until all promises are resolved and copy responses to array
     results = [...await Promise.all(promises)];
 
     console.log(results) // [data, someData, otherData...] 
 
-    results.forEach(result => {
-      if (result && Object.keys(result).length > 0){
-        var geoJSONFeature = jsonToGeoJson(result, day, hour);
-        if (geoJSONFeature && Object.keys(geoJSONFeature).length > 0) {
-          geoJSON.features.push(geoJSONFeature);
-        }
-      }
-     });
-     drawIcons(geoJSON);
+    activityHours = populateActivityHours(results, forecastDays);
+
+    drawIconsForActivityHour(currentHour);
      fetchMoreData = false;
   }
 
@@ -151,6 +145,27 @@
     return hydratedActivityLocation; 
   }
 
+  var populateActivityHours = function(hydratedActivityLocations, days) {
+    var activityHours = new Map();
+
+    // for each hour
+    const hours = days * 24;
+    for (let hour = 0; hour < hours; hour++) {
+      let day = Math.floor(hour / 24);
+      let hourOfDay = hour % 24;
+      hydratedActivityLocations.forEach(hydratedActivityLocation => {
+        if (!activityHours.has(hour)) {
+          activityHours.set(hour, []);
+        }
+        let currentActivities = activityHours.get(hour);
+        let currentActivitiesForLocation = calculateActivities(hydratedActivityLocation, day, hourOfDay);
+        currentActivitiesForLocation.forEach(activity => currentActivities.push(activity));
+        activityHours.set(hour, currentActivities);
+      })
+    }
+    return activityHours;
+  }
+
   var validateMonth = function(startMonth, endMonth) {
     return true;
   }
@@ -180,59 +195,22 @@
     return fetch(requestString).then(res=>res.clone().json());
   }
 
-  // For each result that comes back, convert the data to geoJSON
-  var jsonToGeoJson = function (hydratedActivityLocation, day, hour) {
-    const forecastResponse = hydratedActivityLocation.forecast;
-    const coordinates = hydratedActivityLocation.activityLocation.coordinates;
-    const forecastDay = forecastResponse.forecast.forecastday[day];
-    const forecastHour = forecastDay.hour[hour];
-    var feature = {
-      type: "Feature",
-      properties: {
-        label: hydratedActivityLocation.activityLocation.name,
-        temperature: forecastHour.temp_f,
-        time: forecastHour.time,
-        moonPhase: forecastDay.astro.moon_phase,
-        humidity: forecastHour.humidity,
-        pressure: forecastHour.pressure,
-        windSpeed: forecastHour.wind_mph,
-        windDirection: forecastHour.wind_dir,
-        windGust: forecastHour.gust_mph,
-        icon: "http:" + forecastHour.condition.icon,
-        coordinates: hydratedActivityLocation.activityLocation.coordinates,
-        activities: calculateActivities(hydratedActivityLocation, day, hour)
-      },
-      geometry: {
-        type: "Point",
-        coordinates: [coordinates[1], coordinates[0]]
-      }
-    };
-    // Set the custom marker icon
-    map.data.setStyle(function(feature) {
-      return {
-        icon: {
-          url: feature.getProperty('icon'),
-          anchor: new google.maps.Point(25, 25)
-        }
-      };
-    });
-
-    // returns object
-    return feature.properties.activities.length === 0 ? {} : feature;
-  };
-
   var calculateActivities = function(hydratedActivityLocation, day, hour) {
     var activities = [];
+    const coordinates = hydratedActivityLocation.activityLocation.coordinates;
     const possibleActivities = hydratedActivityLocation.activityLocation.activities;
     const forecastResponse = hydratedActivityLocation.forecast;
     const forecastDay = forecastResponse.forecast.forecastday[day];
     const forecastHour = forecastDay.hour[hour];
 
-    //const windDirection = convertDegreeToCompassPoint8(forecast.wind.deg);
-    //const windSpeedMPH = convertMetersPerSecToRoundedMPH(forecast.wind.speed);
     const windDirection = forecastHour.wind_dir;
     const windSpeedMPH = forecastHour.wind_mph;
+    const windGust = forecastHour.gust_mph;
     const pressure = forecastHour.pressure_mb;
+    const temperature = forecastHour.temp_f;
+    const time = forecastHour.time;
+    const moonPhase = forecastDay.astro.moon_phase;
+    const humidity = forecastHour.humidity;
 
     possibleActivities.forEach(activity => {
       var validActivity = {};
@@ -274,12 +252,39 @@
       // ADD TO RESULT
       if (activity => activity && Object.keys(activity).length > 0) {
         validActivity.label = activity.label;
-        validActivity.time = forecastHour.time;
-        activities.push(validActivity)
+        validActivity.time = time;
+        var feature = {
+          type: "Feature",
+          properties: {
+            activity: validActivity,
+            icon: "http:" + forecastHour.condition.icon,
+            label: hydratedActivityLocation.activityLocation.name
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [coordinates[1], coordinates[0]]
+          }
+        };
+        // Set the custom marker icon
+        map.data.setStyle(function(feature) {
+          return {
+            icon: {
+              url: feature.getProperty('icon'),
+              anchor: new google.maps.Point(25, 25)
+            }
+          };
+        });
+        activities.push(feature);
       }
     });
 
     return activities;
+  }
+
+  var drawIconsForActivityHour = function(hour) {
+    let activities = activityHours.get(hour);
+    activities.forEach(activity => geoJSON.features.push(activity));
+    drawIcons(geoJSON);
   }
 
   // Add the markers to the map
