@@ -47,7 +47,7 @@
   width: 23px;
   height: 24px;
   border: 0;
-  background: url('clock.png');
+  background: url('./assets/clock.png');
   cursor: pointer;
 }
 
@@ -55,7 +55,7 @@
   width: 23px;
   height: 24px;
   border: 0;
-  background: url('clock.png');
+  background: url('./assets/clock.png');
   cursor: pointer;
 }
   </style>
@@ -64,8 +64,11 @@
   <script type="text/javascript"
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_60">
     </script>
+  <!-- <script async
+    src="https://maps.googleapis.com/maps/api/js?key=key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_6&callback=initialize">
+  </script> -->
   <script type=module>
-  import activityLocationData from './location_to_activity.json';
+  import activityLocationData from './location_to_activity.json' assert {type: 'json'};
   //import activityLocationDataLocal from 'http://127.0.0.1:5500/location_to_activity.json' assert {type: 'json'};
   var map;
   var geoJSON;
@@ -85,7 +88,8 @@
 
     map = new google.maps.Map(document.getElementById('map-canvas'),
         mapOptions);
-    // Add interaction listeners to make weather requests
+    
+        // Add interaction listeners to make weather requests
     google.maps.event.addListener(map, 'idle', checkIfDataRequested);
 
     // Sets up and populates the info window with details
