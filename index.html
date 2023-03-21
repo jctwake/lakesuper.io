@@ -1,36 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Lake Superior Fun Time</title>
   <style>
-    html, body{
+    html,
+    body {
       width: 100%;
       height: 100%;
       margin: 0;
       padding: 0;
     }
+
     #map-canvas {
       width: 100%;
       height: 100%;
     }
+
     .gm-style-iw {
       text-align: center;
     }
   </style>
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_60">
-</script>
-<script type=module>
+  <script type="text/javascript"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_60">
+    </script>
+  <script type=module>
   import activityLocationData from './location_to_activity.json' assert {type: 'json'};
+  //import activityLocationDataLocal from 'http://127.0.0.1:5500/location_to_activity.json' assert {type: 'json'};
   var map;
   var geoJSON;
   var request;
   let results = [];
   var gettingData = false;
   var fetchMoreData = true;
-  var openWeatherMapKey = "6d055e39ee237af35ca066f35474e9df";
-  var weatherUnlockedAppID = "17852146";
-  var weatherUnlockedSkiResortKey = "7ec6b8ea019e23538f7b41722205cb72";
 
   function initialize() {
     var mapOptions = {
@@ -84,22 +87,19 @@
     }
   };
 
-  // Get the coordinates from the Map bounds
-  var getCoords = function() {
-    var bounds = map.getBounds();
-    var NE = bounds.getNorthEast();
-    var SW = bounds.getSouthWest();
-    getWeather(NE.lat(), NE.lng(), SW.lat(), SW.lng());
-  };
 
   async function getActivityDataFromJSON () {
-    const promises = []
+    const promises = [];
+    const day = 0;
+    const now = new Date();
+    let hour = now.getHours();
+    var activityLocations = (activityLocationData && activityLocationData.length > 0) ? activityLocationData : activityLocationDataLocal;
 
     resetData();
 
     // fire all requests
-    activityLocationData.forEach(activityLocation => promises.push(fetchDataForActivityLocation(activityLocation)));
-
+    activityLocations.forEach(activityLocation => promises.push(fetchDataForActivityLocation(activityLocation)));
+    //promises.push(fetchDataForActivityLocation(activityLocations[0]));
     // wait until all promises are resolved and copy responses to array
     results = [...await Promise.all(promises)];
 
@@ -107,7 +107,7 @@
 
     results.forEach(result => {
       if (result && Object.keys(result).length > 0){
-        var geoJSONFeature = jsonToGeoJson(result);
+        var geoJSONFeature = jsonToGeoJson(result, day, hour);
         if (geoJSONFeature && Object.keys(geoJSONFeature).length > 0) {
           geoJSON.features.push(geoJSONFeature);
         }
@@ -126,6 +126,7 @@
     const site = activityLocation["site"];
 
     var weather = {};
+    var days = 3;
     var isValidMonth = true;
     var siteUSGS = {};
 
@@ -137,17 +138,14 @@
       return {};
     }
 
-    // if (activityLocation["weather"]) {
-    //   weather = getWeatherLatLng(lat, lng);
-    // }
-
     if (site && Object.keys(site).length > 0) {
       siteUSGS = getSiteData(site);
     }
 
     var hydratedActivityLocation = {
       activityLocation: activityLocation,
-      weatherItem: await getWeatherLatLng(lat, lng),
+      //forecast: await getWeatherLatLng2(lat, lng),
+      forecast: await getForecastLatLngDays(lat, lng, days),
       siteData: await siteUSGS,
     };
     return hydratedActivityLocation; 
@@ -157,13 +155,20 @@
     return true;
   }
 
-  var getWeatherLatLng = function(lat, lng) {
+  var getForecastLatLngDays = function(lat, lng, days) {
     gettingData = true;
-    var url = "https://api.openweathermap.org/data/2.5/weather?"
-    var requestString = url + "lat=" + lat + "&lon=" + lng
-                        + "&cluster=no&format=json"
-                        + "&APPID=" + openWeatherMapKey;
-    return fetch(requestString).then(res=>res.clone().json());
+    const options = {
+	    method: 'GET',
+	    headers: {
+		    'X-RapidAPI-Key': 'c88928e0b5msh75ea338c74903d0p172c80jsn23fe4a426f9a',
+		    'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
+	    }
+    };
+
+    var url = "https://weatherapi-com.p.rapidapi.com/forecast.json?q="
+    var requestString = url + lat + "," + lng + "&days=" + days;
+
+    return fetch(requestString, options).then(res=>res.clone().json());
   }
 
   var getSiteData = function(site) {
@@ -176,33 +181,30 @@
   }
 
   // For each result that comes back, convert the data to geoJSON
-  var jsonToGeoJson = function (hydratedActivityLocation) {
-    const weatherItem = hydratedActivityLocation.weatherItem;
+  var jsonToGeoJson = function (hydratedActivityLocation, day, hour) {
+    const forecastResponse = hydratedActivityLocation.forecast;
+    const coordinates = hydratedActivityLocation.activityLocation.coordinates;
+    const forecastDay = forecastResponse.forecast.forecastday[day];
+    const forecastHour = forecastDay.hour[hour];
     var feature = {
       type: "Feature",
       properties: {
         label: hydratedActivityLocation.activityLocation.name,
-        city: weatherItem.name,
-        weather: weatherItem.weather[0].main,
-        temperature: weatherItem.main.temp,
-        temperatureF: convertKelvinToFahrenheit(weatherItem.main.temp),
-        min: weatherItem.main.temp_min,
-        max: weatherItem.main.temp_max,
-        humidity: weatherItem.main.humidity,
-        pressure: weatherItem.main.pressure,
-        windSpeed: weatherItem.wind.speed,
-        windSpeedMPH: convertMetersPerSecToRoundedMPH(weatherItem.wind.speed),
-        windDegrees: weatherItem.wind.deg,
-        windDirection: convertDegreeToCompassPoint8(weatherItem.wind.deg),
-        windGust: weatherItem.wind.gust,
-        icon: "http://openweathermap.org/img/w/"
-              + weatherItem.weather[0].icon  + ".png",
-        coordinates: [weatherItem.coord.lon, weatherItem.coord.lat],
-        activities: calculateActivities(hydratedActivityLocation)
+        temperature: forecastHour.temp_f,
+        time: forecastHour.time,
+        moonPhase: forecastDay.astro.moon_phase,
+        humidity: forecastHour.humidity,
+        pressure: forecastHour.pressure,
+        windSpeed: forecastHour.wind_mph,
+        windDirection: forecastHour.wind_dir,
+        windGust: forecastHour.gust_mph,
+        icon: "http:" + forecastHour.condition.icon,
+        coordinates: hydratedActivityLocation.activityLocation.coordinates,
+        activities: calculateActivities(hydratedActivityLocation, day, hour)
       },
       geometry: {
         type: "Point",
-        coordinates: [weatherItem.coord.lon, weatherItem.coord.lat]
+        coordinates: [coordinates[1], coordinates[0]]
       }
     };
     // Set the custom marker icon
@@ -219,14 +221,18 @@
     return feature.properties.activities.length === 0 ? {} : feature;
   };
 
-  var calculateActivities = function(hydratedActivityLocation) {
+  var calculateActivities = function(hydratedActivityLocation, day, hour) {
     var activities = [];
     const possibleActivities = hydratedActivityLocation.activityLocation.activities;
-    const weatherItem = hydratedActivityLocation.weatherItem;
+    const forecastResponse = hydratedActivityLocation.forecast;
+    const forecastDay = forecastResponse.forecast.forecastday[day];
+    const forecastHour = forecastDay.hour[hour];
 
-    const windDirection = convertDegreeToCompassPoint8(weatherItem.wind.deg);
-    const windSpeedMPH = convertMetersPerSecToRoundedMPH(weatherItem.wind.speed);
-    const pressure = weatherItem.main.pressure;
+    //const windDirection = convertDegreeToCompassPoint8(forecast.wind.deg);
+    //const windSpeedMPH = convertMetersPerSecToRoundedMPH(forecast.wind.speed);
+    const windDirection = forecastHour.wind_dir;
+    const windSpeedMPH = forecastHour.wind_mph;
+    const pressure = forecastHour.pressure_mb;
 
     possibleActivities.forEach(activity => {
       var validActivity = {};
@@ -268,6 +274,7 @@
       // ADD TO RESULT
       if (activity => activity && Object.keys(activity).length > 0) {
         validActivity.label = activity.label;
+        validActivity.time = forecastHour.time;
         activities.push(validActivity)
       }
     });
@@ -294,48 +301,15 @@
     //results = [];
   };
 
-  var convertMetersPerSecToRoundedMPH = function(mps) {
-    const mph = +((2.23694 * mps).toFixed(2));
-    return Math.round(mph);
-  }
-
-  // uses all 16 possible wind directions
-  var convertDegreeToCompassPoint16 = function(windDegrees) {
-    const compassPoints = ["N", "NNE", "NE", "ENE",
-                           "E", "ESE", "SE", "SSE",
-                           "S", "SSW", "SW", "WSW", 
-                           "W", "WNW", "NW", "NNW"];
-    const rawPosition = Math.floor((windDegrees / 22.5) + 0.5);
-    const arrayPosition = (rawPosition % 16);
-    return compassPoints[arrayPosition];
-  };
-
-  // only uses the standard 8 directions
-  var convertDegreeToCompassPoint8 = function(windDegrees) {
-    const compassPoints = ["N", "NE",
-                           "E", "SE",
-                           "S", "SW",
-                           "W", "NW"];
-    const rawPosition = Math.floor((windDegrees / 45) + 0.5);
-    const arrayPosition = (rawPosition % 8);
-    return compassPoints[arrayPosition];
-  };
-
-  var convertCelsiusToFahrenheit = function(celsius) {
-    return Math.round((celsius * 1.8) + 32);
-  }
-
-  var convertKelvinToFahrenheit = function(kelvin) {
-    return Math.round(((kelvin - 273) * 1.8) + 32);
-  }
-
   google.maps.event.addDomListener(window, 'load', initialize);
 
 </script>
 </head>
+
 <body>
 
-<div id="map-canvas"></div>
+  <div id="map-canvas"></div>
 
 </body>
+
 </html>
