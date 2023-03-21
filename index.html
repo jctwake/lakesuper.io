@@ -4,6 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Lake Superior Fun Time</title>
+  <div class="slidecontainer">
+    <input type="range" min="0" max="72" value="" class="slider" id="hourSlider">
+    <p><span id="hourLabel"></span></p>
+  </div>
   <style>
     html,
     body {
@@ -21,6 +25,39 @@
     .gm-style-iw {
       text-align: center;
     }
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 23px;
+  height: 24px;
+  border: 0;
+  background: url('clock.png');
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 23px;
+  height: 24px;
+  border: 0;
+  background: url('clock.png');
+  cursor: pointer;
+}
   </style>
   <script type="text/javascript"
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_60">
@@ -36,11 +73,12 @@
   var fetchMoreData = true;
   var activityHours = new Map();
   const forecastDays = 3;
+  const currentHour = new Date().getHours();
 
   function initialize() {
     var mapOptions = {
       zoom: 9,
-      center: new google.maps.LatLng(47.3,-91)
+      center: new google.maps.LatLng(47.3,-91.7)
     };
 
     map = new google.maps.Map(document.getElementById('map-canvas'),
@@ -75,6 +113,22 @@
 
   var infowindow = new google.maps.InfoWindow();
 
+  var slider = document.getElementById("hourSlider");
+  var output = document.getElementById("hourLabel");
+  slider.value = currentHour;
+
+  slider.oninput = function() {
+    resetData();
+    var hourValue = Number(this.value);
+    output.innerHTML = getTimeFromCurrentActivityHour(hourValue);
+    drawIconsForActivityHour(hourValue);
+  }
+
+  var getTimeFromCurrentActivityHour = function(hour) {
+    var firstActivity = activityHours.get(hour)[0];
+    return firstActivity.properties["time"];
+  }
+
   var checkIfDataRequested = function() {
     // Stop extra requests being sent
     while (gettingData === true) {
@@ -90,12 +144,7 @@
 
   async function getActivityDataFromJSON () {
     const promises = [];
-    const day = 0;
-    const now = new Date();
-    let currentHour = now.getHours();
     var activityLocations = (activityLocationData && activityLocationData.length > 0) ? activityLocationData : activityLocationDataLocal;
-
-    resetData();
 
     // fire all requests
     activityLocations.forEach(activityLocation => promises.push(fetchDataForActivityLocation(activityLocation)));
@@ -107,8 +156,12 @@
 
     activityHours = populateActivityHours(results, forecastDays);
 
+    //first draw
+    resetData();
+    output.innerHTML = getTimeFromCurrentActivityHour(currentHour);
     drawIconsForActivityHour(currentHour);
-     fetchMoreData = false;
+
+    fetchMoreData = false;
   }
 
   async function fetchDataForActivityLocation(activityLocation) {
@@ -258,7 +311,8 @@
           properties: {
             activity: validActivity,
             icon: "http:" + forecastHour.condition.icon,
-            label: hydratedActivityLocation.activityLocation.name
+            label: hydratedActivityLocation.activityLocation.name,
+            time: time,
           },
           geometry: {
             type: "Point",
@@ -305,6 +359,11 @@
     });
     //results = [];
   };
+
+  Date.prototype.addHours = function(h) {
+    this.setTime(this.getTime() + (h*60*60*1000));
+    return this;
+  }
 
   google.maps.event.addDomListener(window, 'load', initialize);
 
