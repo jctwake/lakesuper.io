@@ -8,6 +8,7 @@
         "activities": [
             {
                 "label": "SURFING",
+                "icon" : "man_surfing.svg",
                 "weather": {
                     "minWindSpeed": "10",
                     "maxWindSpeed": "25",
@@ -30,6 +31,7 @@
         "activities": [
             {
                 "label": "FISHING",
+                "icon" : "fishing_colored.svg",
                 "startMonth": "2",
                 "endMonth": "11",
                 "weather": {
@@ -52,6 +54,7 @@
         "activities": [
             {
                 "label": "FISHING",
+                "icon" : "fishing_colored.svg",
                 "weather": {
                     "minPressure": "1000",
                     "maxPressure": "2500"
@@ -71,9 +74,12 @@
         "activities": [
             {
                 "label": "SKIING",
+                "icon" : "skis.svg",
                 "weather": {
-                    "minPressure": "1000",
-                    "maxPressure": "2500"
+                    "minTempF" : "0",
+                    "maxTempF" : "40",
+                    "minDayChanceOfSnow" : "1",
+                    "maxDayChanceOfSnow" : "100"
                 },
                 "resort": {}
             }
