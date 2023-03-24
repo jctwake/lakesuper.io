@@ -63,6 +63,7 @@ import activityLocationData from './resources/location_to_activity.json' assert 
     var hourValue = Number(this.value);
     output.innerHTML = getTimeFromCurrentActivityHour(hourValue);
     drawIconsForActivityHour(hourValue);
+    //drawIconsForActivities(activityHours.get(hourValue));
   }
 
   var getTimeFromCurrentActivityHour = function(hour) {
@@ -310,6 +311,7 @@ import activityLocationData from './resources/location_to_activity.json' assert 
         validActivity.label = activity.label;
         validActivity.time = time;
         var feature = {
+          id: hydratedActivityLocation.activityLocation.name + validActivity.label,
           type: "Feature",
           properties: {
             activity: validActivity,
@@ -347,6 +349,27 @@ import activityLocationData from './resources/location_to_activity.json' assert 
     let activities = activityHours.get(hour);
     activities.forEach(activity => geoJSON.features.push(activity));
     drawIcons(geoJSON);
+  }
+
+  var drawIconsForActivities = function(activities) {
+    let activitiesToRender = [...activities];
+    let newGeoJSON = {
+      type: "FeatureCollection",
+      features: []
+    };
+
+    activitiesToRender.forEach(activity => {
+      newGeoJSON.features.push(activity);
+    });
+
+    const featuresAdded = map.data.addGeoJson(newGeoJSON);
+    
+    map.data.forEach(mapFeature => {
+      if (!featuresAdded.includes(mapFeature)) {
+        map.data.remove(mapFeature);
+      }
+    })
+
   }
 
   // Add the markers to the map
