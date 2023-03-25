@@ -6,8 +6,10 @@ import activityLocationData from './resources/location_to_activity.json' assert 
   var gettingData = false;
   var fetchMoreData = true;
   var activityHours = new Map();
+  var now = new Date();
   const forecastDays = 3;
-  const currentHour = new Date().getHours();
+  const currentHour = now.getHours()
+  const currentYear = now.getFullYear();
   const superCache = await caches.open('super-cache');
 
   function initialize() {
@@ -240,6 +242,8 @@ import activityLocationData from './resources/location_to_activity.json' assert 
       var validActivity = {};
       // FOR EACH POSSIBLE WEATHER DETAIL
       // SEE IF WEATHER PASSES ACTIVITY THRESHOLD
+      const startDateString = activity.startDate;
+      const endDateString = activity.endDate;
       const tolerableWindDirections = activity.weather.windDirection
       const minTempF = activity.weather.minTempF;
       const maxTempF = activity.weather.maxTempF;
@@ -251,6 +255,19 @@ import activityLocationData from './resources/location_to_activity.json' assert 
       const maxDayChanceOfSnow = activity.weather.maxDayChanceOfSnow;
       const minDayChanceOfRain = activity.weather.minDayChanceOfRain;
       const maxDayChanceOfRain = activity.weather.maxDayChanceOfRain;
+
+      // DATES
+      if (startDateString && endDateString) {
+        const startDate = new Date(currentYear + "-" + startDateString);
+        const endDate = new Date(currentYear + "-" + endDateString);
+        var nowRelativeToActivity = new Date(now);
+        nowRelativeToActivity.setDate(nowRelativeToActivity.getDate() + day);
+        if (nowRelativeToActivity < startDate || nowRelativeToActivity > endDate) {
+          return {};
+        } else {
+          validActivity.timeframe = startDate.toISOString + " - " + endDate.toISOString;
+        }
+      }
 
       //TEMPERATURE (F)
       if (minTempF && maxTempF) {

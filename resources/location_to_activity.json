@@ -32,8 +32,8 @@
             {
                 "label": "FISHING",
                 "icon" : "fishing_colored.svg",
-                "startMonth": "2",
-                "endMonth": "11",
+                "startDate": "03-26",
+                "endDate": "11-24",
                 "weather": {
                     "minPressure": "1000",
                     "maxPressure": "2500"
