@@ -53,7 +53,6 @@ function makeNumber(number) {
   let txt = document.createElementNS(svgns, "text");
   svg.appendChild(txt);
   txt.textContent = number;
-  txt.fill = "#5cceee";
   gsap.set(txt, {
     attr: { x: startX, y: y2Pos - 40, "text-anchor": "middle" }
   });
@@ -69,7 +68,7 @@ animNumbers
     duration: dur,
     y: -jump,
     scale: 1.5,
-    fill: "#fdb250",
+    fill: "#9bc1f8",
     stagger: {
       amount: masterStagger,
       yoyo: true,

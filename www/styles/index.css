@@ -4,13 +4,7 @@ html,
   justify-content: center;
   align-items: center;
   top: -10%;
-  color: #5cceee;
-  background-image: linear-gradient(
-    0deg,
-    rgb(192, 211, 250),
-    rgb(248, 252, 192),
-    rgb(194, 208, 226)
-  );
+  color: #a9dab2;
 }
 
 
@@ -18,13 +12,13 @@ body {
   font-family: "proxima-nova", sans-serif;
   display: flex;
   height: 100vh;
-  background: rgb(255, 253, 136);
+  background: #a9dab2;
   overflow: hidden;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   font-size: 20px;
-  color: #5cceee
+  color: #a9dab2
 }
 
 #map-canvas {
@@ -41,7 +35,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: #9bc1f8;
 }
 
 svg {
@@ -51,14 +45,14 @@ svg {
   }
 
 svg text {
-    fill: #5cceee;
+    fill: #e8ebec;
     font-size: 20px;
     user-select: none;
   }
   
   svg line {
     stroke-width: 1.5;
-    stroke: white;
+    stroke: #e8ebec;
   }
   
   h2 {
@@ -66,7 +60,7 @@ svg text {
   }
   h2 span {
     font-weight: 700;
-    color: #fdb250;
+    color: #e8ebec;
   }
 
   h1, h2,
@@ -75,13 +69,13 @@ svg text {
   }
   
   a {
-    background: #fdb250;
+    background: #e8ebec;
     color: white;
     text-decoration: none;
     border-radius: 3px;
   }
   
   a:hover {
-    background: white;
-      color: #fdb250;
+    background: #e8ebec;
+      color: #e8ebec;
   }
