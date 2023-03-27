@@ -3,16 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <title>Lake Superior Fun Time</title>
-  <div class="slidecontainer">
-    <input type="range" min="0" max="71" value="" class="slider" id="hour-slider">
-    <p><span id="hour-label"></span></p>
-  </div>
-  <link rel="stylesheet" href="./styles/index.css">
+  <!-- <div class="slidecontainer"> -->
+
+
+  <link rel="stylesheet" href="./www/styles/index.css">
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
-  <script type=module src="./index.js"></script>
+  <script src="./www/lib/gsap/gsap.min.js"></script>
+  <script src="./www/lib/gsap/Draggable.min.js"></script>
+  <script type="module" src="./www/app/app.js"></script>
+  <script type="module" src="./www/components/wave_slider.js" defer></script>
 </head>
 <body>
+    <!-- <input type="range" min="0" max="71" value="" class="slider" id="hour-slider">
+    <p><span id="hour-label"></span></p> -->
+    <svg id="demo" xmlns="http://www.w3.org/2000/svg" width="1000" height="140" viewBox="0 0 1000 140"> 
+    <path id="slider" d="M15.63,1.49.4,27.87A3,3,0,0,0,3,32.35H33.45A3,3,0,0,0,36,27.87L20.81,1.49A3,3,0,0,0,15.63,1.49Z" fill="#5cceee"/></svg>
+    <p><span id="hour-label"></span></p>
   <div id="map-canvas"></div>
   <script type="text/javascript"
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_60&callback=initialize"

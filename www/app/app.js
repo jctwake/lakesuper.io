@@ -1,4 +1,5 @@
-import activityLocationData from './resources/location_to_activity.json' assert {type: 'json'};
+import activityLocationData from '../resources/location_to_activity.json' assert {type: 'json'};
+const superCache = await caches.open('super-cache');
   var map;
   var geoJSON;
   var request;
@@ -10,7 +11,6 @@ import activityLocationData from './resources/location_to_activity.json' assert 
   const forecastDays = 3;
   const currentHour = now.getHours()
   const currentYear = now.getFullYear();
-  const superCache = await caches.open('super-cache');
 
   function initialize() {
     var mapOptions = {
@@ -54,19 +54,20 @@ import activityLocationData from './resources/location_to_activity.json' assert 
 
   var infowindow = new google.maps.InfoWindow();
 
-  var slider = document.getElementById("hour-slider");
   var output = document.getElementById("hour-label");
-  slider.value = currentHour;
-
-  slider.oninput = function() {
+  //slider.value = currentHour;
+  export var updateSliderValue = function(value) {
+    //console.log("value " + value);
     map.setZoom(9);
     resetData();
     infowindow.close();
-    var hourValue = Number(this.value);
+    var hourValue = Number(value);
     output.innerHTML = getTimeFromCurrentActivityHour(hourValue);
     drawIconsForActivityHour(hourValue);
-    //drawIconsForActivities(activityHours.get(hourValue));
+    drawIconsForActivities(activityHours.get(hourValue));
   }
+
+
 
   var getTimeFromCurrentActivityHour = function(hour) {
     var firstActivity = activityHours.get(hour)[0];
@@ -103,7 +104,7 @@ import activityLocationData from './resources/location_to_activity.json' assert 
 
     //first draw
     resetData();
-    output.innerHTML = getTimeFromCurrentActivityHour(currentHour);
+    //output.innerHTML = getTimeFromCurrentActivityHour(currentHour);
     drawIconsForActivityHour(currentHour);
 
     fetchMoreData = false;
@@ -333,7 +334,7 @@ import activityLocationData from './resources/location_to_activity.json' assert 
           properties: {
             activity: validActivity,
             weatherIcon: "http:" + forecastHour.condition.icon,
-            activityIcon: "./assets/" + activity.icon,
+            activityIcon: "www/assets/" + activity.icon,
             label: hydratedActivityLocation.activityLocation.name,
             time: time,
           },
