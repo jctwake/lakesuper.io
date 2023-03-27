@@ -1,22 +1,26 @@
 import { updateSliderValue } from '../app/app.js';
 const svgns = "http://www.w3.org/2000/svg";
-const demo = document.querySelector("svg");
+const svg = document.querySelector("svg");
+const timeSlider = document.getElementById("timeSlider");
+const hourLabel = document.getElementById("hour-label");
+const slider = document.getElementById("slider");
 
 let positions = 72; // how many numbers
-let numTicks = 6;
+let numTicks = 6; // how many ticks
+let spacing = 12; // space between lines
+let jump = 45; // height of number jump during animation
+let dur = 1.1; // master duration
 let count = 0; // simple counter for the numbers
-let startX = 30; // first line position and fist number position
+let startX = 60; // first line position and first number position
 let startXRef = 30; //change this one as well ...
 let dragMin = startX;
-let y2Pos = 200; // bottom of each tick line
+let y2Pos = 60; // bottom of each tick line
 let y1Pos;
-let spacing = 12; // space between lines
-let jump = 90; // height of number jump during animation
-let dur = 1.1; // master duration
 let numberLineHeightOffset = 25;
 let tickLineHeightOffset = 15;
 let masterStagger = 5; // higher numbers tighten the curve
 let lastValue;
+let lastX;
 
 // move the draggable element into position
 gsap.set("#slider", { x: startX, xPercent: -50, y: y2Pos + 20 });
@@ -38,7 +42,7 @@ makeLine(y2Pos - numberLineHeightOffset); //  need 1 extra line for the last num
 // creates the line elements
 function makeLine(yp) {
   let newLine = document.createElementNS(svgns, "line");
-  demo.appendChild(newLine);
+  svg.appendChild(newLine);
   gsap.set(newLine, {
     attr: { x1: startX, x2: startX, y1: yp, y2: y2Pos }
   });
@@ -47,8 +51,9 @@ function makeLine(yp) {
 // creates the numbers
 function makeNumber(number) {
   let txt = document.createElementNS(svgns, "text");
-  demo.appendChild(txt);
+  svg.appendChild(txt);
   txt.textContent = number;
+  txt.fill = "#5cceee";
   gsap.set(txt, {
     attr: { x: startX, y: y2Pos - 40, "text-anchor": "middle" }
   });
@@ -64,7 +69,7 @@ animNumbers
     duration: dur,
     y: -jump,
     scale: 1.5,
-    fill: "#5cceee",
+    fill: "#fdb250",
     stagger: {
       amount: masterStagger,
       yoyo: true,
@@ -99,8 +104,13 @@ Draggable.create("#slider", {
 function updateMeter() {
   gsap.set(animNumbers, { time: mapper(this.x) });
   var convertedValue = Math.floor((this.x - startXRef) / (spacing));
+  if (convertedValue === positions) {
+    convertedValue = convertedValue - 1;
+  }
   if (convertedValue != lastValue) {
     updateSliderValue(convertedValue);
     lastValue = convertedValue;
   }
+  hourLabel.style.left += (this.x - lastX);
+  lastX = this.x;
 }

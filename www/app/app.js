@@ -1,4 +1,6 @@
-import activityLocationData from '../resources/location_to_activity.json' assert {type: 'json'};
+//import activityLocationData from '../resources/location_to_activity.json' assert {type: 'json'};
+import activityLocationData from '../resources/location_to_activity_lite.json' assert {type: 'json'};
+
 const superCache = await caches.open('super-cache');
   var map;
   var geoJSON;
@@ -62,12 +64,12 @@ const superCache = await caches.open('super-cache');
     resetData();
     infowindow.close();
     var hourValue = Number(value);
-    output.innerHTML = getTimeFromCurrentActivityHour(hourValue);
-    drawIconsForActivityHour(hourValue);
-    drawIconsForActivities(activityHours.get(hourValue));
+    if (activityHours.get(hourValue).length > 0) {
+      output.innerHTML = getTimeFromCurrentActivityHour(hourValue);
+      drawIconsForActivityHour(hourValue);
+      drawIconsForActivities(activityHours.get(hourValue));
+    }
   }
-
-
 
   var getTimeFromCurrentActivityHour = function(hour) {
     var firstActivity = activityHours.get(hour)[0];

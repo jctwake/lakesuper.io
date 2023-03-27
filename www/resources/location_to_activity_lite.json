@@ -1,0 +1,25 @@
+[
+    {
+        "coordinates": [
+            46.717475,
+            -92.212428
+        ],
+        "name": "Spirit Mountain",
+        "resort": {
+            "id": "218004"
+        },
+        "activities": [
+            {
+                "label": "SKIING",
+                "icon" : "skis.svg",
+                "weather": {
+                    "minTempF" : "0",
+                    "maxTempF" : "40",
+                    "minDayChanceOfSnow" : "1",
+                    "maxDayChanceOfSnow" : "100"
+                },
+                "resort": {}
+            }
+        ]
+    }
+]
