@@ -110,6 +110,4 @@ function updateMeter() {
     updateSliderValue(convertedValue);
     lastValue = convertedValue;
   }
-  hourLabel.style.left += (this.x - lastX);
-  lastX = this.x;
 }

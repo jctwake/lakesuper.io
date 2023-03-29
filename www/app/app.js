@@ -1,5 +1,5 @@
 //import activityLocationData from '../resources/location_to_activity.json' assert {type: 'json'};
-import activityLocationData from '../resources/location_to_activity_lite.json' assert {type: 'json'};
+import activityLocationData from '../resources/location_to_activity.json' assert {type: 'json'};
 
 const superCache = await caches.open('super-cache');
   var map;
@@ -56,7 +56,7 @@ const superCache = await caches.open('super-cache');
 
   var infowindow = new google.maps.InfoWindow();
 
-  var output = document.getElementById("hour-label");
+  //var output = document.getElementById("hour-label");
   //slider.value = currentHour;
   export var updateSliderValue = function(value) {
     //console.log("value " + value);
@@ -64,16 +64,36 @@ const superCache = await caches.open('super-cache');
     resetData();
     infowindow.close();
     var hourValue = Number(value);
-    if (activityHours.get(hourValue).length > 0) {
-      output.innerHTML = getTimeFromCurrentActivityHour(hourValue);
+    if (activityHourIsValid(hourValue)) {
       drawIconsForActivityHour(hourValue);
       drawIconsForActivities(activityHours.get(hourValue));
     }
   }
 
-  var getTimeFromCurrentActivityHour = function(hour) {
-    var firstActivity = activityHours.get(hour)[0];
-    return firstActivity.properties["time"];
+  export var getTimeFromCurrentActivityHour = function(hour) {
+    // var timeToReturn;
+    // if (activityHourIsValid(hour)) {
+    //   var firstActivity = activityHours.get(hour)[0];
+    //   timeToReturn = firstActivity.properties["time"];
+    // } else {
+    //   timeToReturn = new Date();
+    // }
+    // return timeToReturn;
+   var firstActivity = activityHours.get(hour)[0];
+   return firstActivity.properties["time"];
+  }
+
+  export var getActivitiesForHour = function(hour) {
+    var activity = activityHours.get(hour);
+    return activity;
+  }
+
+
+  var activityHourIsValid = function(hour) {
+    if (activityHours.get(hour) && activityHours.get(hour).length > 0) {
+      return true;
+    }
+    return false;
   }
 
   var checkIfDataRequested = function() {
@@ -417,3 +437,5 @@ const superCache = await caches.open('super-cache');
   }
 
   google.maps.event.addDomListener(window, 'load', initialize);
+
+  export { activityHours };

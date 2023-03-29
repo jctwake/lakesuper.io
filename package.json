@@ -1,0 +1,23 @@
+{
+  "name": "jctwake.github.io",
+  "version": "1.0.0",
+  "description": "lake-super-io",
+  "main": "index.js",
+  "dependencies": {
+    "nouislider": "^15.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jctwake/lakesuper.io.git"
+  },
+  "author": "Josh Thomas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jctwake/lakesuper.io/issues"
+  },
+  "homepage": "https://github.com/jctwake/lakesuper.io#readme"
+}
