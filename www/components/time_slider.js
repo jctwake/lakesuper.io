@@ -1,8 +1,9 @@
 import { updateSliderValue, activityHours } from '../app/app.js';
 let slider = document.getElementById('slider');
-let startValue = new Date().getHours;
+let now = new Date();
+let startValue = now.getHours();
 var nextVal = startValue;
-//let background = document.querySelector('.slider-top');
+//let background = document.qerySelector('.slider-top');
 
 noUiSlider.create(slider, {
     start: [12],
