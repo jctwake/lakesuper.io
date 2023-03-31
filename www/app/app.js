@@ -1,6 +1,6 @@
 //import activityLocationData from '../resources/location_to_activity.json' assert {type: 'json'};
 import activityLocationData from '../resources/location_to_activity.json' assert {type: 'json'};
-import { calculateActivities } from './activity.js';
+import { fetchDataForActivityLocation, populateActivityHours } from './activity.js';
 
 const superCache = await caches.open('super-cache');
   var map;
@@ -28,7 +28,7 @@ const superCache = await caches.open('super-cache');
 
     // Sets up and populates the info window with details
     map.data.addListener('click', function(event) {
-      var contentString = "<img src=" + event.feature.getProperty("weatherIcon") + ">"
+      var contentString = "<img src=" + event.feature.getProperty("infoIcon") + ">"
        + "<br /><strong>" + event.feature.getProperty("label") + "</strong>";
       
        var activity = event.feature.getProperty("activity");
@@ -115,14 +115,16 @@ const superCache = await caches.open('super-cache');
     var activityLocations = (activityLocationData && activityLocationData.length > 0) ? activityLocationData : activityLocationDataLocal;
 
     // fire all requests
-    activityLocations.forEach(activityLocation => promises.push(fetchDataForActivityLocation(activityLocation)));
+    activityLocations.forEach(activityLocation => promises.push(fetchDataForActivityLocation(activityLocation, forecastDays)));
 
     // wait until all promises are resolved and copy responses to array
     results = [...await Promise.all(promises)];
 
     console.log(results) // [data, someData, otherData...] 
 
-    activityHours = populateActivityHours(results, forecastDays);
+    gettingData = true;
+    activityHours = populateActivityHours(map, results, forecastDays);
+    gettingData = false;
 
     //first draw
     resetData();
@@ -130,116 +132,6 @@ const superCache = await caches.open('super-cache');
     drawIconsForActivityHour(currentHour);
 
     fetchMoreData = false;
-  }
-
-  async function fetchDataForActivityLocation(activityLocation) {
-    const latLng = activityLocation["coordinates"];
-    const lat = latLng[0];
-    const lng = latLng[1];
-    const startMonth = activityLocation["startMonth"];
-    const endMonth = activityLocation["endMonth"];
-    const site = activityLocation["site"];
-
-    var weather = {};
-    var days = 3;
-    var isValidMonth = true;
-    var siteUSGS = {};
-
-    if (startMonth && endMonth) {
-      isValidMonth = validateMonth(startMonth, endMonth);
-    }
-
-    if (!isValidMonth) {
-      return {};
-    }
-
-    if (site && Object.keys(site).length > 0) {
-      siteUSGS = getSiteData(site);
-    }
-
-    //const forecastRequest = generateRequestForecastLatLngDays(lat,lng,days);
-    //caches.open('super-cache').then(cache => cache.add(forecastRequest));
-
-    var hydratedActivityLocation = {
-      activityLocation: activityLocation,
-      //forecast: await caches.open('super-cache').then(cache => cache.match(forecastRequest)),
-      forecast: await getForecastLatLngDays(lat, lng, days),
-      siteData: await siteUSGS,
-    };
-    return hydratedActivityLocation; 
-  }
-
-  var populateActivityHours = function(hydratedActivityLocations, days) {
-    var activityHours = new Map();
-
-    // for each hour
-    const hours = days * 24;
-    for (let hour = 0; hour < hours; hour++) {
-      let day = Math.floor(hour / 24);
-      let hourOfDay = hour % 24;
-      hydratedActivityLocations.forEach(hydratedActivityLocation => {
-        if (!activityHours.has(hour)) {
-          activityHours.set(hour, []);
-        }
-        let currentActivities = activityHours.get(hour);
-        let currentActivitiesForLocation = calculateActivities(map, hydratedActivityLocation, day, hourOfDay);
-        currentActivitiesForLocation.forEach(activity => currentActivities.push(activity));
-        activityHours.set(hour, currentActivities);
-      })
-    }
-    return activityHours;
-  }
-
-  var validateMonth = function(startMonth, endMonth) {
-    return true;
-  }
-
-  var getForecastLatLngDays = function(lat, lng, days) {
-    gettingData = true;
-    const options = {
-	    method: 'GET',
-	    headers: {
-		    'X-RapidAPI-Key': 'c88928e0b5msh75ea338c74903d0p172c80jsn23fe4a426f9a',
-		    'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
-	    }
-    };
-
-    var url = "https://weatherapi-com.p.rapidapi.com/forecast.json?q="
-    var requestString = url + lat + "," + lng + "&days=" + days;
-    return fetch(requestString, options).then(res=> res.clone().json());
-  }
-
-  var generateRequestForecastLatLngDays = function(lat, lng, days) {
-    gettingData = true;
-    const options = {
-	    method: 'GET',
-	    headers: {
-		    'X-RapidAPI-Key': 'c88928e0b5msh75ea338c74903d0p172c80jsn23fe4a426f9a',
-		    'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
-	    }
-    };
-
-    var url = "https://weatherapi-com.p.rapidapi.com/forecast.json?q="
-    var requestString = url + lat + "," + lng + "&days=" + days;
-    return new Request(requestString, options);
-  }
-
-  var getSiteData = function(site) {
-    gettingData = true;
-    const siteId = site["id"];
-    const parameterCd = site["parameterCodes"];
-    var requestString = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=" + siteId +
-    "&parameterCd=" + parameterCd + "&siteType=ST&siteStatus=all";
-    return fetch(requestString).then(res=>res.clone().json());
-  }
-
-  var generateRequestSiteData = function(site) {
-    gettingData = true;
-    const siteId = site["id"];
-    const parameterCd = site["parameterCodes"];
-    var requestString = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=" + siteId +
-    "&parameterCd=" + parameterCd + "&siteType=ST&siteStatus=all";
-    return new Request(requestString);
   }
 
   var drawIconsForActivityHour = function(hour) {

@@ -28,7 +28,7 @@ noUiSlider.create(slider, {
     tooltips: {
         to: function() {
             var currentDate = new Date();
-            currentDate.setTime(currentDate.getTime() + (nextVal*60*60*1000));
+            currentDate.setTime(currentDate.getTime() + ((nextVal-startValue)*60*60*1000));
             return currentDate.toLocaleString();
         }
     }
