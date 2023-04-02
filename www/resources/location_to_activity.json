@@ -25,6 +25,54 @@
     },
     {
         "coordinates": [
+            47.038274,
+            -91.642416
+        ],
+        "name": "Flood Bay State Wayside",
+        "checkWeather" : true,
+        "activities": [
+            {
+                "label": "SURFING",
+                "mapIcon" : "man_surfing.svg",
+                "weather": {
+                    "minWindSpeed": "10",
+                    "maxWindSpeed": "25",
+                    "windDirection": [
+                        "NNE",
+                        "NE",
+                        "ENE",
+                        "E"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "coordinates": [
+            47.141873,
+            -91.456428
+        ],
+        "name": "Agate Beach",
+        "checkWeather" : true,
+        "activities": [
+            {
+                "label": "SURFING",
+                "mapIcon" : "man_surfing.svg",
+                "weather": {
+                    "minWindSpeed": "10",
+                    "maxWindSpeed": "25",
+                    "windDirection": [
+                        "NNE",
+                        "NE",
+                        "ENE",
+                        "E"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "coordinates": [
             46.952090,
             -92.065279
         ],
@@ -39,6 +87,30 @@
                 "weather": {
                     "minPressure": "1000",
                     "maxPressure": "2500"
+                }
+            }
+        ]
+    },
+    {
+        "coordinates": [
+            46.924080,
+            -91.817462
+        ],
+        "name": "Stony Point",
+        "checkWeather" : true,
+        "activities": [
+            {
+                "label": "SURFING",
+                "mapIcon" : "man_surfing.svg",
+                "weather": {
+                    "minWindSpeed": "10",
+                    "maxWindSpeed": "25",
+                    "windDirection": [
+                        "NNE",
+                        "NE",
+                        "ENE",
+                        "E"
+                    ]
                 }
             }
         ]

@@ -63,10 +63,10 @@ const superCache = await caches.open('super-cache');
     map.setZoom(9);
     resetData();
     infowindow.close();
-    var hourValue = Number(value);
+    var hourValue = Math.round(value);
     if (activityHourIsValid(hourValue)) {
       drawIconsForActivityHour(hourValue);
-      drawIconsForActivities(activityHours.get(hourValue));
+      //drawIconsForActivities(activityHours.get(hourValue));
     }
   }
 
