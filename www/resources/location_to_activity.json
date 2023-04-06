@@ -4,7 +4,7 @@
             46.835869,
             -92.006769
         ],
-        "name": "Lester River Surf Spot",
+        "name": "Lester River Mouth - South",
         "checkWeather" : true,
         "activities": [
             {
@@ -19,6 +19,14 @@
                         "ENE",
                         "E"
                     ]
+                }
+            },
+            {
+                "label": "FISHING",
+                "mapIcon" : "fishing_colored.svg",
+                "weather": {
+                    "minPressure": "1000",
+                    "maxPressure": "2500"
                 }
             }
         ]

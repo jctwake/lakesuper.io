@@ -201,10 +201,61 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
             activities.push(feature);
         }
     });
-
-    return activities;
+    return mergeActivities(map, activities, hydratedActivityLocation, time);
 }
 
 var validateMonth = function (startMonth, endMonth) {
     return true;
+}
+
+var mergeActivities = function(map, activities, hydratedActivityLocation, time) {
+    var activitySize = activities.length;
+    const coordinates = hydratedActivityLocation.activityLocation.coordinates;
+    var validActivity = {};
+    var mergedActivities = [];
+
+    if (activitySize <= 1) {
+        return activities;
+    }
+    
+    // multiple activities - merge them all into a single feature
+    activities.forEach(activity => {
+        Object.keys(activity.properties.activity).forEach(key => {
+            if (key == "label") {
+                validActivity[key] += " + " + activity.properties.activity[key];
+            } else {
+                validActivity[key] = activity.properties.activity[key];
+            }
+          });
+    });
+
+    var feature = {
+        id: hydratedActivityLocation.activityLocation.name + validActivity.label,
+        type: "Feature",
+        properties: {
+            activity: validActivity,
+            infoIcon: assetsPath + activitySize + ".svg",
+            mapIcon: assetsPath + activitySize + ".svg",
+            label: hydratedActivityLocation.activityLocation.name,
+            time: time,
+        },
+        geometry: {
+            type: "Point",
+            coordinates: [coordinates[1], coordinates[0]]
+        }
+    };
+    // Set the custom marker icon
+    map.data.setStyle(function (feature) {
+        return {
+            icon: {
+                url: feature.getProperty('mapIcon'),
+                anchor: new google.maps.Point(10, 10),
+                size: new google.maps.Size(100, 100),
+                origin: new google.maps.Point(0, 0),
+                scaledSize: new google.maps.Size(32, 32)
+            }
+        };
+    });
+    mergedActivities.push(feature);
+    return mergedActivities;
 }
