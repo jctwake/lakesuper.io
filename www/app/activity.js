@@ -3,6 +3,7 @@ import { getForecastLatLngDays, getSiteData } from './restify.js';
 const assetsPath = "www/assets/";
 var now = new Date();
 const currentYear = now.getFullYear();
+const numberOfDefaultActivityValues = 2; // label + time
 
 export async function fetchDataForActivityLocation(activityLocation, days) {
     const latLng = activityLocation["coordinates"];
@@ -62,7 +63,10 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
     const forecastResponse = hydratedActivityLocation.forecast;
 
     possibleActivities.forEach(activity => {
+        // set default values
         var validActivity = {};
+        validActivity.time = time;
+        validActivity.label = activity.label;
 
         const startDateString = activity.startDate;
         const endDateString = activity.endDate;
@@ -168,9 +172,7 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
         }
 
         // ADD TO RESULT
-        if (activity => activity && Object.keys(activity).length > 0) {
-            validActivity.label = activity.label;
-            validActivity.time = time;
+        if (activity => activity && Object.keys(activity).length > numberOfDefaultActivityValues) {
             var feature = {
                 id: hydratedActivityLocation.activityLocation.name + validActivity.label,
                 type: "Feature",
@@ -217,12 +219,16 @@ var mergeActivities = function(map, activities, hydratedActivityLocation, time) 
     if (activitySize <= 1) {
         return activities;
     }
+
+    //set top-level values 
+    validActivity[time] = time;
     
     // multiple activities - merge them all into a single feature
     activities.forEach(activity => {
+        validActivity[activity.properties.activity.label] = '\n' + activity.properties.activity.label;
         Object.keys(activity.properties.activity).forEach(key => {
-            if (key == "label") {
-                validActivity[key] += " + " + activity.properties.activity[key];
+            if (key == "label" || key == "time") {
+                return;
             } else {
                 validActivity[key] = activity.properties.activity[key];
             }
