@@ -12,17 +12,15 @@
   <script>eruda.init();</script>
   <script src="./www/lib/gsap/gsap.min.js"></script>
   <script src="./www/lib/gsap/Draggable.min.js"></script>
+  <script type="module" src="./www/components/time_slider.js"></script>
   <script type="module" src="./www/app/app.js"></script>
   <script type="module" src="./node_modules\nouislider\dist\nouislider.js"></script>
-  <script type="module" src="./www/components/time_slider.js" defer></script>
 </head>
 <body>
     <!-- <input type="range" min="0" max="71" value="" class="slider" id="hour-slider">
     <p><span id="hour-label"></span></p> -->
   <div id="heading"></div>
-  <div id="slider-wrap">
-    <div id="slider"></div>
-  </div>
+  <div id="slider"></div>
   <div id="map-canvas"></div>
   <script type="text/javascript"
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_60&callback=initialize"
