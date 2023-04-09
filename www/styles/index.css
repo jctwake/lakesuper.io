@@ -14,10 +14,14 @@ body {
 }
 
 #heading {
-  height: 5vh;
-  top: 10vh;
+  height: 10vh;
+  top: 0vh;
 }
 
+#slider {
+  height: 2.5vh;
+  top: 3vh;
+}
 
 #slider .noUi-active .noUi-tooltip {
   display: block;
