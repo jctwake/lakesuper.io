@@ -61,6 +61,7 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
     const coordinates = hydratedActivityLocation.activityLocation.coordinates;
     const possibleActivities = hydratedActivityLocation.activityLocation.activities;
     const forecastResponse = hydratedActivityLocation.forecast;
+    const siteData = hydratedActivityLocation.siteData;
 
     possibleActivities.forEach(activity => {
         // set default values
@@ -86,11 +87,12 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
             }
         }
 
-        // ------- START OF WEATHER BASED CHECKS ------- //
+        // ------- START OF WEATHER-BASED CHECKS ------- //
 
-        if (checkWeather && activityWeather) {
+        if (checkWeather &&  Object.keys(activityWeather).length > 0) {
             const forecastDay = forecastResponse.forecast.forecastday[day];
             const forecastHour = forecastDay.hour[hour];
+            validActivity.time = forecastHour.time;
             infoIcon = "http:" + forecastHour.condition.icon;
 
             const windDirection = forecastHour.wind_dir;
@@ -98,7 +100,6 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
             const windGust = forecastHour.gust_mph;
             const pressure = forecastHour.pressure_mb;
             const temperature = forecastHour.temp_f;
-            time = forecastHour.time;
             const moonPhase = forecastDay.astro.moon_phase;
             const humidity = forecastHour.humidity;
             const dayChanceOfSnow = forecastDay.day.daily_chance_of_snow;
@@ -169,10 +170,22 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
                     validActivity.dayChanceOfRain = dayChanceOfRain + "% chance of rain";
                 }
             }
+
+        }
+
+        // ------- START OF WEATHER-BASED CHECKS ------- //
+        if (siteData && Object.keys(siteData).length > 0) {
+            // TEMPORARY -- GET FIRST TIME SERIES AND ADD ALL VALUES TO VALID ACTIVITY
+            const timeSeries = siteData.value.timeSeries;
+            timeSeries.forEach(ts => {
+                const value = ts.values[0].value[0].value;
+                const unit = ts.variable.unit.unitCode;
+                validActivity[ts.name] = value + unit;
+            })
         }
 
         // ADD TO RESULT
-        if (activity => activity && Object.keys(activity).length > numberOfDefaultActivityValues) {
+        if (validActivity && Object.keys(validActivity).length >= numberOfDefaultActivityValues) {
             var feature = {
                 id: hydratedActivityLocation.activityLocation.name + validActivity.label,
                 type: "Feature",
@@ -181,7 +194,7 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
                     infoIcon: infoIcon,
                     mapIcon: assetsPath + activity.mapIcon,
                     label: hydratedActivityLocation.activityLocation.name,
-                    time: time,
+                    time: validActivity.time,
                 },
                 geometry: {
                     type: "Point",

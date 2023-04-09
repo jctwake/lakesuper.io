@@ -19,6 +19,6 @@ body {
 }
 
 
-#slider .noUi-tooltip {
+#slider .noUi-active .noUi-tooltip {
   display: block;
 }
