@@ -186,5 +186,23 @@
                 }
             }
         ]
+    },
+    {
+        "coordinates": [
+            46.809898,
+            -92.060683
+        ],
+        "name": "Lake Walk - Holiday Station Parking",
+        "checkWeather" : true,
+        "activities": [
+            {
+                "label": "RUNNING",
+                "mapIcon" : "person_running.svg",
+                "weather": {
+                    "minTempF": "35",
+                    "maxTempF": "85"
+                }
+            }
+        ]
     }
 ]
