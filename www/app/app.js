@@ -1,6 +1,7 @@
 //import activityLocationData from '../resources/location_to_activity.json' assert {type: 'json'};
 import activityLocationData from '../resources/location_to_activity.json' assert {type: 'json'};
 import { fetchDataForActivityLocation, populateActivityHours } from './activity.js';
+import { getForecastLatLngDays } from './restify.js';
 
 const superCache = await caches.open('super-cache');
   var map;
@@ -10,14 +11,17 @@ const superCache = await caches.open('super-cache');
   var gettingData = false;
   var fetchMoreData = true;
   var activityHours = new Map();
+  var boundForecast = {};
   var now = new Date();
   const forecastDays = 3;
   const currentHour = now.getHours()
+  const startLat = 47.3;
+  const startLng = -91.7;
 
   function initialize() {
     var mapOptions = {
       zoom: 9,
-      center: new google.maps.LatLng(47.3,-91.7)
+      center: new google.maps.LatLng(startLat,startLng)
     };
 
     map = new google.maps.Map(document.getElementById('map-canvas'),
@@ -68,6 +72,7 @@ const superCache = await caches.open('super-cache');
       drawIconsForActivityHour(hourValue);
       //drawIconsForActivities(activityHours.get(hourValue));
     }
+    updateBoundInfo(hourValue);
   }
 
   export var getTimeFromCurrentActivityHour = function(hour) {
@@ -105,11 +110,12 @@ const superCache = await caches.open('super-cache');
 
     if (fetchMoreData === true) {
       getActivityDataFromJSON();
+      getDataForMapBounds();
     }
   };
 
 
-  async function getActivityDataFromJSON () {
+  async function getActivityDataFromJSON() {
     const promises = [];
 
     var activityLocations = (activityLocationData && activityLocationData.length > 0) ? activityLocationData : activityLocationDataLocal;
@@ -128,10 +134,26 @@ const superCache = await caches.open('super-cache');
 
     //first draw
     resetData();
-    //output.innerHTML = getTimeFromCurrentActivityHour(currentHour);
     drawIconsForActivityHour(currentHour);
+    updateBoundInfo(currentHour);
 
     fetchMoreData = false;
+  }
+
+  async function getDataForMapBounds(days) {
+    const promises = [];
+    var results = [];
+    var bounds = map.getBounds();
+    var NE = bounds.getNorthEast();
+    var SW = bounds.getSouthWest();
+
+    // fire all requests
+    promises.push(getForecastLatLngDays(startLat, startLng, forecastDays));
+
+    // wait until all promises are resolved and copy responses to array
+    results = [...await Promise.all(promises)];
+
+    boundForecast = results[0];
   }
 
   var drawIconsForActivityHour = function(hour) {
@@ -158,8 +180,7 @@ const superCache = await caches.open('super-cache');
         map.data.remove(mapFeature);
       }
     })
-
-  }
+  };
 
   // Add the markers to the map
   var drawIcons = function (geoJSON) {
@@ -167,6 +188,18 @@ const superCache = await caches.open('super-cache');
      // Set the flag to finished
      gettingData = false;
   };
+
+  var updateBoundInfo = function(hourValue) {
+    const boundInfo = document.getElementById('bound-info-label');
+    var hour = hourValue % 24;
+    var day = Math.floor(hourValue / 24);
+    if (Object.keys(boundForecast).length > 0) {
+      var forecastDayHour = boundForecast.forecast.forecastday[day].hour[hour]
+      var forecastCondition = forecastDayHour.condition.text;
+      var temperature = forecastDayHour.temp_f;
+      boundInfo.innerText = forecastCondition + " " + temperature + "F"
+    }
+  }
 
     // Clear data layer and geoJSON
   var resetData = function () {
