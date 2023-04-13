@@ -5,11 +5,11 @@
             -92.006769
         ],
         "name": "Lester River Mouth - South",
-        "checkWeather" : true,
+        "checkWeather": true,
         "activities": [
             {
                 "label": "SURFING",
-                "mapIcon" : "man_surfing.svg",
+                "mapIcon": "man_surfing.svg",
                 "weather": {
                     "minWindSpeed": "10",
                     "maxWindSpeed": "25",
@@ -23,7 +23,7 @@
             },
             {
                 "label": "FISHING",
-                "mapIcon" : "fishing_colored.svg",
+                "mapIcon": "fishing_colored.svg",
                 "weather": {
                     "minPressure": "1000",
                     "maxPressure": "2500"
@@ -37,11 +37,11 @@
             -91.642416
         ],
         "name": "Flood Bay State Wayside",
-        "checkWeather" : true,
+        "checkWeather": true,
         "activities": [
             {
                 "label": "SURFING",
-                "mapIcon" : "man_surfing.svg",
+                "mapIcon": "man_surfing.svg",
                 "weather": {
                     "minWindSpeed": "10",
                     "maxWindSpeed": "25",
@@ -61,11 +61,11 @@
             -91.456428
         ],
         "name": "Agate Beach",
-        "checkWeather" : true,
+        "checkWeather": true,
         "activities": [
             {
                 "label": "SURFING",
-                "mapIcon" : "man_surfing.svg",
+                "mapIcon": "man_surfing.svg",
                 "weather": {
                     "minWindSpeed": "10",
                     "maxWindSpeed": "25",
@@ -85,11 +85,11 @@
             -92.065279
         ],
         "name": "Eagle Lake",
-        "checkWeather" : true,
+        "checkWeather": true,
         "activities": [
             {
                 "label": "FISHING",
-                "mapIcon" : "fishing_colored.svg",
+                "mapIcon": "fishing_colored.svg",
                 "startDate": "03-26",
                 "endDate": "11-24",
                 "weather": {
@@ -105,11 +105,11 @@
             -91.817462
         ],
         "name": "Stony Point",
-        "checkWeather" : true,
+        "checkWeather": true,
         "activities": [
             {
                 "label": "SURFING",
-                "mapIcon" : "man_surfing.svg",
+                "mapIcon": "man_surfing.svg",
                 "weather": {
                     "minWindSpeed": "10",
                     "maxWindSpeed": "25",
@@ -133,11 +133,11 @@
             "id": "04015330",
             "parameterCodes": "00010,00060"
         },
-        "checkWeather" : true,
+        "checkWeather": true,
         "activities": [
             {
                 "label": "FISHING",
-                "mapIcon" : "fishing_colored.svg",
+                "mapIcon": "fishing_colored.svg",
                 "weather": {
                     "minPressure": "1000",
                     "maxPressure": "2500"
@@ -154,16 +154,16 @@
         "resort": {
             "id": "218004"
         },
-        "checkWeather" : true,
+        "checkWeather": true,
         "activities": [
             {
                 "label": "SKIING",
-                "mapIcon" : "skis.svg",
+                "mapIcon": "skis.svg",
                 "weather": {
-                    "minTempF" : "0",
-                    "maxTempF" : "40",
-                    "minDayChanceOfSnow" : "1",
-                    "maxDayChanceOfSnow" : "100"
+                    "minTempF": "0",
+                    "maxTempF": "40",
+                    "minDayChanceOfSnow": "1",
+                    "maxDayChanceOfSnow": "100"
                 },
                 "resort": {}
             }
@@ -175,14 +175,14 @@
             -92.120680
         ],
         "name": "Bent Paddle",
-        "checkWeather" : false,
+        "checkWeather": false,
         "activities": [
             {
                 "label": "LIVE MUSIC",
-                "mapIcon" : "music_note.svg",
-                "infoIcon" : "beer_mug.svg",
-                "event" :{
-                    "eventName" : "New Salty Dog"
+                "mapIcon": "music_note.svg",
+                "infoIcon": "beer_mug.svg",
+                "event": {
+                    "eventName": "New Salty Dog"
                 }
             }
         ]
@@ -193,11 +193,11 @@
             -92.060683
         ],
         "name": "Lake Walk - Holiday Station Parking",
-        "checkWeather" : true,
+        "checkWeather": true,
         "activities": [
             {
                 "label": "RUNNING",
-                "mapIcon" : "person_running.svg",
+                "mapIcon": "person_running.svg",
                 "weather": {
                     "minTempF": "35",
                     "maxTempF": "85"
@@ -210,12 +210,22 @@
             46.80594,
             -92.06123
         ],
-        "name": "White Sun Boulder",
-        "checkWeather" : true,
+        "name": "26th Street Boulders",
+        "checkWeather": true,
         "activities": [
             {
-                "label": "BOULDERING",
-                "mapIcon" : "boulder.svg",
+                "label": "White Sun Boulder",
+                "mapIcon": "boulder.svg",
+                "weather": {
+                    "minTempF": "35",
+                    "maxTempF": "100",
+                    "minDayChanceOfRain": "0",
+                    "maxDayChanceOfRain": "0"
+                }
+            },
+            {
+                "label": "SID",
+                "mapIcon": "boulder.svg",
                 "weather": {
                     "minTempF": "35",
                     "maxTempF": "100",

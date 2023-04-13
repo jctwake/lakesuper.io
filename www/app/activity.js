@@ -104,6 +104,7 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
             const humidity = forecastHour.humidity;
             const dayChanceOfSnow = forecastDay.day.daily_chance_of_snow;
             const dayChanceOfRain = forecastDay.day.daily_chance_of_rain;
+            const precipitationInches = forecastHour.precip_in;
 
             const tolerableWindDirections = activityWeather.windDirection;
             const minTempF = activityWeather.minTempF;
@@ -116,6 +117,8 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
             const maxDayChanceOfSnow = activityWeather.maxDayChanceOfSnow;
             const minDayChanceOfRain = activityWeather.minDayChanceOfRain;
             const maxDayChanceOfRain = activityWeather.maxDayChanceOfRain;
+            const minPrecipitation = activityWeather.minPrecipitation;
+            const maxPrecipitation = activityWeather.maxPrecipitation;
 
             //TEMPERATURE (F)
             if (minTempF && maxTempF) {
@@ -150,6 +153,15 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
                     return {};
                 } else {
                     validActivity.pressure = pressure + " kPa";
+                }
+            }
+
+            //PRECIPITATION
+            if (minPrecipitation && maxPrecipitation) {
+                if (precipitationInches < minPrecipitation || precipitationInches > maxPrecipitation) {
+                    return {};
+                } else {
+                    validActivity.minPrecipitation = precipitationInches + " in. precipitation";
                 }
             }
 
