@@ -141,6 +141,54 @@
                 "weather": {
                     "minPressure": "1000",
                     "maxPressure": "2500"
+                },
+                "siteData" : {
+                    "0060" : {
+                        "min" : "100",
+                        "max" : "500"
+                    }
+                }
+            },
+            {
+                "label": "KAYAKING",
+                "mapIcon": "row.svg",
+                "weather": {
+                    "minTempF": "30",
+                    "maxTempF": "100"
+                },
+                "siteData" : {
+                    "0060" : {
+                        "min" : "100",
+                        "max" : "500"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "coordinates": [
+            46.53777778,
+            -91.5952778
+        ],
+        "name": "Bois Brule River USGS Site",
+        "site": {
+            "id": "04025500",
+            "parameterCodes": "00010,00060"
+        },
+        "checkWeather": true,
+        "activities": [
+            {
+                "label": "FISHING",
+                "mapIcon": "fishing_colored.svg",
+                "weather": {
+                    "minPressure": "1000",
+                    "maxPressure": "2500"
+                },
+                "siteData" : {
+                    "0060" : {
+                        "min" : "100",
+                        "max" : "500"
+                    }
                 }
             }
         ]
