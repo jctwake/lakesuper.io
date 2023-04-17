@@ -130,18 +130,10 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
                 } else validActivity.isValid = false;
             }
 
-            //WIND DIRECTION
-            if (tolerableWindDirections) {
-                if (tolerableWindDirections.includes(windDirection)) {
-                    validActivity.wind = windDirection;
-                    validActivity.isValid = true;
-                } else validActivity.isValid = false;
-            }
-
-            //WIND SPEED
-            if (minWindSpeed && maxWindSpeed) {
-                if (windSpeedMPH >= minWindSpeed && windSpeedMPH <= maxWindSpeed) {
-                    validActivity.wind += windSpeedMPH + " MPH";
+            //WIND (DIRECTION + SPEED)
+            if (tolerableWindDirections && minWindSpeed && maxWindSpeed) {
+                if (tolerableWindDirections.includes(windDirection) && windSpeedMPH >= minWindSpeed && windSpeedMPH <= maxWindSpeed) {
+                    validActivity.wind = windDirection + " " + windSpeedMPH + " MPH";
                     validActivity.isValid = true;
                 } else validActivity.isValid = false;
             }
@@ -202,8 +194,11 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
             });
         }
 
-        // ADD TO RESULT
-        if (validActivity && Object.keys(validActivity).length >= numberOfDefaultActivityValues && validActivity.isValid) {
+        // ADD TO RESULTS
+        if (validActivity && validActivity.isValid && Object.keys(validActivity).length >= numberOfDefaultActivityValues) {
+            //scrub isValid from activity
+            delete validActivity.isValid;
+
             var feature = {
                 id: hydratedActivityLocation.activityLocation.name + validActivity.label,
                 type: "Feature",
