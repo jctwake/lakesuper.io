@@ -3,7 +3,7 @@ import { getForecastLatLngDays, getSiteData } from './restify.js';
 const assetsPath = "www/assets/";
 var now = new Date();
 const currentYear = now.getFullYear();
-const numberOfDefaultActivityValues = 2; // label + time
+const numberOfDefaultActivityValues = 3; // label + time + isValid
 
 export async function fetchDataForActivityLocation(activityLocation, days) {
     const latLng = activityLocation["coordinates"];
@@ -68,11 +68,13 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
         var validActivity = {};
         validActivity.time = time;
         validActivity.label = activity.label;
+        validActivity.isValid = false;
 
         const startDateString = activity.startDate;
         const endDateString = activity.endDate;
         var infoIcon = assetsPath + activity.infoIcon;
         var activityWeather = activity.weather;
+        const activitySiteData = activity.siteData;
 
         // DATES
         if (startDateString && endDateString) {
@@ -122,82 +124,86 @@ var calculateActivities = function (map, hydratedActivityLocation, day, hour) {
 
             //TEMPERATURE (F)
             if (minTempF && maxTempF) {
-                if (temperature < minTempF || temperature > maxTempF) {
-                    return {};
-                } else {
+                if (temperature >= minTempF && temperature <= maxTempF) {
                     validActivity.temperature = temperature + "&deg; F"
-                }
+                    validActivity.isValid = true;
+                } else validActivity.isValid = false;
             }
 
             //WIND DIRECTION
             if (tolerableWindDirections) {
-                if (!tolerableWindDirections.includes(windDirection)) {
-                    return {};
-                } else {
+                if (tolerableWindDirections.includes(windDirection)) {
                     validActivity.wind = windDirection;
-                }
+                    validActivity.isValid = true;
+                } else validActivity.isValid = false;
             }
 
             //WIND SPEED
             if (minWindSpeed && maxWindSpeed) {
-                if (windSpeedMPH < minWindSpeed || windSpeedMPH > maxWindSpeed) {
-                    return {};
-                } else {
+                if (windSpeedMPH >= minWindSpeed && windSpeedMPH <= maxWindSpeed) {
                     validActivity.wind += windSpeedMPH + " MPH";
-                }
+                    validActivity.isValid = true;
+                } else validActivity.isValid = false;
             }
 
             //PRESSURE
             if (minPressure && maxPressure) {
-                if (pressure < minPressure || pressure > maxPressure) {
-                    return {};
-                } else {
+                if (pressure >= minPressure && pressure <= maxPressure) {
                     validActivity.pressure = pressure + " kPa";
-                }
+                    validActivity.isValid = true;
+                } else validActivity.isValid = false;
             }
 
             //PRECIPITATION
             if (minPrecipitation && maxPrecipitation) {
-                if (precipitationInches < minPrecipitation || precipitationInches > maxPrecipitation) {
-                    return {};
-                } else {
+                if (precipitationInches >= minPrecipitation || precipitationInches >= maxPrecipitation) {
                     validActivity.minPrecipitation = precipitationInches + " in. precipitation";
-                }
+                    validActivity.isValid = true;
+                } else validActivity.isValid = false;
             }
 
             //DAILY CHANCE OF SNOW
             if (minDayChanceOfSnow && maxDayChanceOfSnow) {
-                if (dayChanceOfSnow < minDayChanceOfSnow || dayChanceOfSnow > maxDayChanceOfSnow) {
-                    return {};
-                } else {
+                if (dayChanceOfSnow >= minDayChanceOfSnow && dayChanceOfSnow <= maxDayChanceOfSnow) {
                     validActivity.dayChanceOfSnow = dayChanceOfSnow + "% chance of snow";
-                }
+                    validActivity.isValid = true;
+                } else validActivity.isValid = false;
             }
 
             //DAILY CHANCE OF RAIN
             if (minDayChanceOfRain && maxDayChanceOfRain) {
-                if (dayChanceOfRain < minDayChanceOfRain || dayChanceOfRain > maxDayChanceOfRain) {
-                    return {};
-                } else {
+                if (dayChanceOfRain >= minDayChanceOfRain && dayChanceOfRain <= maxDayChanceOfRain) {
                     validActivity.dayChanceOfRain = dayChanceOfRain + "% chance of rain";
-                }
+                    validActivity.isValid = true;
+                } else validActivity.isValid = false;
             }
 
         }
 
-        // ------- START OF WEATHER-BASED CHECKS ------- //
-        if (siteData && Object.keys(siteData).length > 0) {
+        // ------- START OF SITE-BASED CHECKS ------- //
+        if (siteData && Object.keys(siteData).length > 0 && activitySiteData && Object.keys(activitySiteData).length > 0) {
             // TEMPORARY -- GET FIRST TIME SERIES AND ADD ALL VALUES TO VALID ACTIVITY
             const timeSeries = siteData.value.timeSeries;
             timeSeries.forEach(ts => {
-                const value = ts.values[0].value[0].value;
-                const unit = ts.variable.unit.unitCode;
-                validActivity[ts.name] = value + unit;
-            })
+                for(let i = 0; i < activitySiteData.length; i++) {
+                    const code = activitySiteData[i].code;
+                    const min = activitySiteData[i].min;
+                    const max = activitySiteData[i].max;
+                    const value = ts.values[i].value[0].value;
+                    const unit = ts.variable.unit.unitCode;
+                    
+                    if (ts.variable.variableCode[i].value == code && value >= min && value <= max) {
+                        validActivity[ts.name] = value + unit;
+                        validActivity.isValid = true;
+                    } else {
+                        validActivity.isValid = false;
+                    }
+                }
+            });
         }
 
         // ADD TO RESULT
-        if (validActivity && Object.keys(validActivity).length >= numberOfDefaultActivityValues) {
+        if (validActivity && Object.keys(validActivity).length >= numberOfDefaultActivityValues && validActivity.isValid) {
             var feature = {
                 id: hydratedActivityLocation.activityLocation.name + validActivity.label,
                 type: "Feature",

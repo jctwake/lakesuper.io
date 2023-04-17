@@ -156,12 +156,13 @@
                     "minTempF": "30",
                     "maxTempF": "100"
                 },
-                "siteData" : {
-                    "0060" : {
+                "siteData" : [
+                    {
+                        "code" : "00060",
                         "min" : "100",
                         "max" : "500"
                     }
-                }
+                ]
             }
         ]
     },
@@ -184,12 +185,13 @@
                     "minPressure": "1000",
                     "maxPressure": "2500"
                 },
-                "siteData" : {
-                    "0060" : {
+                "siteData" : [
+                    {
+                        "code" : "00060",
                         "min" : "100",
                         "max" : "500"
                     }
-                }
+                ]
             }
         ]
     },
