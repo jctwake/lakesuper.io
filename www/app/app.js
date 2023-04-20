@@ -190,14 +190,17 @@ const superCache = await caches.open('super-cache');
   };
 
   var updateBoundInfo = function(hourValue) {
-    const boundInfo = document.getElementById('bound-info-label');
+    const boundInfoLabel = document.getElementById('bound-info-label');
+    const boundInfoImage = document.getElementById('bound-info-image');
+
     var hour = hourValue % 24;
     var day = Math.floor(hourValue / 24);
     if (Object.keys(boundForecast).length > 0) {
       var forecastDayHour = boundForecast.forecast.forecastday[day].hour[hour]
       var forecastCondition = forecastDayHour.condition.text;
       var temperature = forecastDayHour.temp_f;
-      boundInfo.innerText = forecastCondition + " " + temperature + "F"
+      boundInfoLabel.innerText = forecastCondition + " " + temperature + "F"
+      boundInfoImage.src = forecastDayHour.condition.icon;
     }
   }
 

@@ -5,7 +5,7 @@ body {
 
 #map-canvas {
   width: 100vw;
-  height: 90vh;
+  height: 85vh;
   overflow: hidden;
   flex-direction: column;
   justify-content: center;
@@ -14,17 +14,29 @@ body {
 }
 
 #heading {
-  height: 15vh;
+  height: 20vh;
   top: 0vh;
+  justify-content: center;
 }
 
 #bound-info {
   position: absolute;
   height: 5vh;
   top: 10vh;
+  left: 30vw;
+}
+
+#bound-info-label {
   color: blue;
   justify-content: center;
 }
+
+#bound-info-label {
+  color: blue;
+  justify-content: center;
+  overflow: hidden;
+}
+
 
 #slider {
   height: 2.5vh;
