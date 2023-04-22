@@ -13,36 +13,43 @@ body {
   color: black;
 }
 
-#heading {
-  height: 20vh;
-  top: 0vh;
-  justify-content: center;
+.flex-container {
+  display: flex;
+  height: 200px;
+  flex-direction: column;
+  align-content: flex-start;
 }
 
-#bound-info {
-  position: absolute;
-  height: 5vh;
-  top: 10vh;
-  left: 30vw;
-}
-
-#bound-info-label {
-  color: blue;
-  justify-content: center;
-}
-
-#bound-info-label {
-  color: blue;
-  justify-content: center;
-  overflow: hidden;
-}
-
-
-#slider {
-  height: 2.5vh;
-  top: 3vh;
+.header {
+  flex: 0 0 40px;
+  height: 40px;
+  background-color: #ffffff;
 }
 
 #slider .noUi-active .noUi-tooltip {
+  order: 2;
+  flex: 0 0 40px;
   display: block;
+  padding-top: 10%;
+}
+
+#bound-info {
+  order: 3;
+  padding-top: 20px;
+  flex-basis: 70%;
+  padding-left: 40%;
+  display: flex;
+  align-content: center;
+  flex-direction: row;
+}
+
+#bound-info-label {
+  color: blue;
+  align-content: center;
+  padding: 20px;
+}
+
+#bound-info-image {
+  color: blue;
+  padding: 20px;
 }

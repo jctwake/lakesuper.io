@@ -196,10 +196,7 @@ const superCache = await caches.open('super-cache');
     var hour = hourValue % 24;
     var day = Math.floor(hourValue / 24);
     if (Object.keys(boundForecast).length > 0) {
-      var forecastDayHour = boundForecast.forecast.forecastday[day].hour[hour]
-      var forecastCondition = forecastDayHour.condition.text;
-      var temperature = forecastDayHour.temp_f;
-      boundInfoLabel.innerText = forecastCondition + " " + temperature + "F"
+
       boundInfoImage.src = forecastDayHour.condition.icon;
     }
   }
