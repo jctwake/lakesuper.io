@@ -25,17 +25,28 @@
     <div id="bound-info">
       <img id="bound-info-image"></img>
       <span id="bound-info-label"></span>
+      <input type="button" onclick="presentActivityForm()" value="Add activity">
     </div>
   </div>
+  <div id="activity-form">
+    <form id="location_activity_form" action="/app.js">
+      Latitude: <input type="text" name="lat"><br>
+      Longitude: <input type="text" name="lng"><br>
+      Location Name: <input type="text" name="locationName"><br>
+      Activity Name: <input type="text" name="activityName"><br>
+      <input type="button" onclick="processFormInput()" value="Submit">
+    </form>
+  </div>
   <div id="map-canvas"></div>
-  <form id="location_activity_form" action="/app.js">
-    Latitude: <input type="text" name="lat"><br>
-    Longitude: <input type="text" name="lng"><br><br>
-    <input type="button" onclick="processFormInput()" value="Submit">
-  </form>
+
   <script type="text/javascript"
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_60&callback=initialize"
     defer>
+  </script>
+  <script>
+  var presentActivityForm = function() {
+    document.getElementById("activity-form").style.visibility = "visible";
+  }
   </script>
 </body>
 </html>

@@ -227,6 +227,14 @@ const superCache = await caches.open('super-cache');
     return this;
   }
 
+  var presentActivityForm = function() {
+    document.getElementById("activity-form").style.visibility = "visible";
+  }
+
+  var processFormInput = function() {
+    console.log("form processed");
+  }
+
   google.maps.event.addDomListener(window, 'load', initialize);
 
   export { activityHours };

@@ -53,3 +53,7 @@ body {
   color: blue;
   padding: 20px;
 }
+
+#activity-form {
+  visibility: hidden;
+}
