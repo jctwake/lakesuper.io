@@ -23,9 +23,9 @@
     <div class="header"></div>
     <div id="slider"></div>
     <div id="bound-info">
+      <input id="add-activity-button" type="button" onclick="toggleActivityFormVisibility()" value="Add activity">
       <img id="bound-info-image"></img>
       <span id="bound-info-label"></span>
-      <input type="button" onclick="presentActivityForm()" value="Add activity">
     </div>
   </div>
   <div id="activity-form">
@@ -44,8 +44,9 @@
     defer>
   </script>
   <script>
-  var presentActivityForm = function() {
-    document.getElementById("activity-form").style.visibility = "visible";
+  var toggleActivityFormVisibility = function() {
+    var activityForm = document.getElementById("activity-form");
+    activityForm.style.display = (activityForm.style.display === "none") ? "block" : "none";
   }
   </script>
 </body>

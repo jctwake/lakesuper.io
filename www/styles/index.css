@@ -54,6 +54,15 @@ body {
   padding: 20px;
 }
 
+#add-activity-button {
+  height: 30px;
+  background-color: white;
+  color: black;
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  align-self: center;
+}
+
 #activity-form {
-  visibility: hidden;
+  display: none;
 }
