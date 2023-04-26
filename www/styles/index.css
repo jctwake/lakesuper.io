@@ -66,3 +66,12 @@ body {
 #activity-form {
   display: none;
 }
+
+.form-control {
+  display: block;
+  width: 300px;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #172432;
+}

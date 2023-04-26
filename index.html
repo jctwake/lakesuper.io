@@ -29,11 +29,11 @@
     </div>
   </div>
   <div id="activity-form">
-    <form id="location_activity_form" action="/app.js">
-      Latitude: <input type="text" name="lat"><br>
-      Longitude: <input type="text" name="lng"><br>
-      Location Name: <input type="text" name="locationName"><br>
-      Activity Name: <input type="text" name="activityName"><br>
+    <form id="location-activity-form" action="">
+      Latitude: <input type="text" class="form-control" id="lat" name="lat"><br>
+      Longitude: <input type="text" class="form-control" id="lng" name="lng"><br>
+      Location Name: <input type="text" class="form-control" id="locationName" name="locationName"><br>
+      Activity Name: <input type="text" class="form-control" id="activityName" name="activityName"><br>
       <input type="button" onclick="processFormInput()" value="Submit">
     </form>
   </div>
@@ -47,6 +47,16 @@
   var toggleActivityFormVisibility = function() {
     var activityForm = document.getElementById("activity-form");
     activityForm.style.display = (activityForm.style.display === "none") ? "block" : "none";
+  }
+  var processFormInput = function() {
+    var activityForm = document.getElementById("location-activity-form");
+    let lat = document.getElementById("lat").value;
+    let lng = document.getElementById("lng").value;
+    let locationName = document.getElementById("locationName").value;
+    let activityName = document.getElementById("activityName").value;
+
+    console.log("FORM: " + lat + " | " + lng + " | " + locationName + " | " + activityName);
+    //activityForm.submit();
   }
   </script>
 </body>
