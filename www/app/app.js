@@ -196,7 +196,8 @@ const superCache = await caches.open('super-cache');
     var hour = hourValue % 24;
     var day = Math.floor(hourValue / 24);
     if (Object.keys(boundForecast).length > 0) {
-      var forecastDayHour = boundForecast.forecast.forecastday[day].hour[hour]
+      var forecastDayHour = boundForecast.forecast.forecastday[day].hour[hour];
+      var forecastTime = forecastDayHour.time;
       var forecastCondition = forecastDayHour.condition.text;
       var temperatureString = forecastDayHour.temp_f + "F";
       var windString = forecastDayHour.wind_dir + " " + forecastDayHour.wind_mph + "mph";
@@ -204,7 +205,7 @@ const superCache = await caches.open('super-cache');
       var chanceOfRainString = forecastDayHour.chance_of_rain + "% chance of rain";
       var changeOfSnowString = forecastDayHour.chance_of_snow + "% chance of snow";
 
-      boundInfoLabel.innerText = forecastCondition + "\n" 
+      boundInfoLabel.innerText = forecastTime + "\n" + forecastCondition + "\n" 
       + temperatureString + "\n" + windString + "\n" + uvString;
       boundInfoImage.src = forecastDayHour.condition.icon;
     }

@@ -312,5 +312,25 @@
                 }
             }
         ]
+    },
+    {
+        "coordinates": [
+            46.756640,
+            -92.145878
+        ],
+        "name": "Wheeler Sports Complex",
+        "checkWeather": true,
+        "activities": [
+            {
+                "label": "Skateboarding",
+                "mapIcon": "skateboard.svg",
+                "weather": {
+                    "minTempF": "35",
+                    "maxTempF": "100",
+                    "minDayChanceOfRain": "0",
+                    "maxDayChanceOfRain": "0"
+                }
+            }
+        ]
     }
 ]
