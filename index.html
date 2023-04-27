@@ -34,7 +34,7 @@
       Longitude: <input type="text" class="form-control" id="lng" name="lng"><br>
       Location Name: <input type="text" class="form-control" id="locationName" name="locationName"><br>
       Activity Name: <input type="text" class="form-control" id="activityName" name="activityName"><br>
-      <input type="button" onclick="processFormInput()" value="Submit">
+      <input type="button" onclick="processFormInput(event)" value="Submit">
     </form>
   </div>
   <div id="map-canvas"></div>
@@ -48,7 +48,7 @@
     var activityForm = document.getElementById("activity-form");
     activityForm.style.display = (activityForm.style.display === "none") ? "block" : "none";
   }
-  var processFormInput = function() {
+  var processFormInput = function(event) {
     var activityForm = document.getElementById("location-activity-form");
     let lat = document.getElementById("lat").value;
     let lng = document.getElementById("lng").value;
@@ -56,7 +56,8 @@
     let activityName = document.getElementById("activityName").value;
 
     console.log("FORM: " + lat + " | " + lng + " | " + locationName + " | " + activityName);
-    //activityForm.submit();
+    event.preventDefault();
+    activityForm.submit();
   }
   </script>
 </body>
