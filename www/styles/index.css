@@ -3,9 +3,15 @@ body {
   background: #F3F7FC;
 }
 
-#map-canvas {
-  width: 100vw;
+#map-activity-container {
+  display: flex;
+  flex-direction: row;
+  align-content: flex-start;
   height: 85vh;
+}
+
+#map-canvas {
+  width: 70vw;
   overflow: hidden;
   flex-direction: column;
   justify-content: center;
@@ -13,7 +19,12 @@ body {
   color: black;
 }
 
-.flex-container {
+#activity-list {
+  width: 30vw;
+  background-color: purple;
+}
+
+.header-flex-container {
   display: flex;
   height: 200px;
   flex-direction: column;

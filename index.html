@@ -19,7 +19,7 @@
 <body>
     <!-- <input type="range" min="0" max="71" value="" class="slider" id="hour-slider">
     <p><span id="hour-label"></span></p> -->
-  <div class="flex-container">
+  <div class="header-flex-container">
     <div class="header"></div>
     <div id="slider"></div>
     <div id="bound-info">
@@ -37,7 +37,11 @@
       <input type="button" onclick="processFormInput(event)" value="Submit">
     </form>
   </div>
-  <div id="map-canvas"></div>
+  <div id="map-activity-container">
+    <div id="map-canvas"></div>
+    <div id="activity-list"></div>
+  </div>
+
 
   <script type="text/javascript"
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_60&callback=initialize"
