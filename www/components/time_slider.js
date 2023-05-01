@@ -1,5 +1,6 @@
 import { updateSliderValue, } from '../app/app.js';
 let slider = document.getElementById('slider');
+let label = document.getElementById('bound-info-label');
 let now = new Date();
 let startValue = now.getHours();
 var nextVal = startValue;
@@ -19,9 +20,10 @@ noUiSlider.create(slider, {
     //format: formatForSlider,
     tooltips: {
         to: function() {
-            var currentDate = new Date();
-            currentDate.setTime(currentDate.getTime() + ((nextVal-startValue)*60*60*1000));
-            return currentDate.toLocaleString();
+            // var currentDate = new Date();
+            // currentDate.setTime(currentDate.getTime() + ((nextVal-startValue)*60*60*1000));
+            // return currentDate.toLocaleString();
+            return label.innerText.substring(0,16);
         }
     }
 });
