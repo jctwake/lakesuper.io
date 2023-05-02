@@ -11,6 +11,7 @@ const superCache = await caches.open('super-cache');
   var gettingData = false;
   var fetchMoreData = true;
   var activityHours = new Map();
+  var activityList = document.getElementById("activity-list")
   var boundForecast = {};
   var now = new Date();
   const forecastDays = 3;
@@ -159,6 +160,7 @@ const superCache = await caches.open('super-cache');
   var drawIconsForActivityHour = function(hour) {
     let activities = activityHours.get(hour);
     activities.forEach(activity => geoJSON.features.push(activity));
+    updateActivityList(activities);
     drawIcons(geoJSON);
   }
 
@@ -209,6 +211,15 @@ const superCache = await caches.open('super-cache');
       + temperatureString + "\n" + windString + "\n" + uvString;
       boundInfoImage.src = forecastDayHour.condition.icon;
     }
+  }
+
+  var updateActivityList = function(activities) {
+    activityList.replaceChildren();
+    activities.forEach(activity => {
+      var li = document.createElement('li');
+      li.appendChild(document.createTextNode(activity.id));
+      activityList.appendChild(li);
+    })
   }
 
     // Clear data layer and geoJSON
