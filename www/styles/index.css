@@ -25,7 +25,15 @@ body {
 }
 
 ul {
-  color: whitesmoke;
+  padding: 20px;
+  background: #F3F7FC;
+}
+
+li {
+  padding: 20px;
+  background: #c4c4c4;
+  border-width: 2px;
+  border: #4CAF50;
 }
 
 .header-flex-container {
