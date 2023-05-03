@@ -24,6 +24,10 @@ body {
   background-color: purple;
 }
 
+ul {
+  color: whitesmoke;
+}
+
 .header-flex-container {
   display: flex;
   height: 200px;
