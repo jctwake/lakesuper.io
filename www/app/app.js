@@ -218,6 +218,7 @@ const superCache = await caches.open('super-cache');
     activities.forEach(activity => {
       var li = document.createElement('li');
       li.appendChild(document.createTextNode(activity.id));
+      li.setAttribute("list-style-image", activity.properties.mapIcon);
       activityList.appendChild(li);
     })
   }

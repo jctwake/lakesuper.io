@@ -34,6 +34,7 @@ li {
   background: #c4c4c4;
   border-width: 2px;
   border: #4CAF50;
+  overflow: hidden;
 }
 
 .header-flex-container {
