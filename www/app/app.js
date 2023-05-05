@@ -217,8 +217,13 @@ const superCache = await caches.open('super-cache');
     activityList.replaceChildren();
     activities.forEach(activity => {
       var li = document.createElement('li');
+      var img = document.createElement('img');
+      img.width = "20";
+      img.height = "20";
+      img.padding = "10";
+      img.src = activity.properties.mapIcon;
+      li.appendChild(img);
       li.appendChild(document.createTextNode(activity.id));
-      li.setAttribute("list-style-image", activity.properties.mapIcon);
       activityList.appendChild(li);
     })
   }
