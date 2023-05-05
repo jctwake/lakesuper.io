@@ -20,13 +20,15 @@ body {
 }
 
 #activity-list-view {
-  width: 30vw;
+  width: 40vw;
   background-color: purple;
 }
 
 ul {
-  padding: 20px;
+  padding: 40px;
   background: #F3F7FC;
+  list-style-position: inside;
+  list-style-type: none;
 }
 
 li {
@@ -34,6 +36,7 @@ li {
   background: #c4c4c4;
   border-width: 2px;
   border: #4CAF50;
+  border-left: 2px;
   overflow: hidden;
 }
 
