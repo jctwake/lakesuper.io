@@ -21,19 +21,19 @@ body {
 
 #activity-list-view {
   width: 40vw;
-  background-color: purple;
+  background-color: #102542;
 }
 
 ul {
   padding: 40px;
-  background: #F3F7FC;
+  background: #F87060;
   list-style-position: inside;
   list-style-type: none;
 }
 
 li {
   padding: 20px;
-  background: #c4c4c4;
+  background: #CDD7D6;
   border-width: 2px;
   border: #4CAF50;
   border-left: 2px;
