@@ -29,15 +29,15 @@ ul {
   background: #F87060;
   list-style-position: inside;
   list-style-type: none;
+  border: 1px solid black;
 }
 
 li {
   padding: 20px;
   background: #CDD7D6;
   border-width: 2px;
-  border: #4CAF50;
-  border-left: 2px;
   overflow: hidden;
+  border: 2px solid 102542;
 }
 
 .header-flex-container {
