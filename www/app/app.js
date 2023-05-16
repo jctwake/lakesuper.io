@@ -217,7 +217,9 @@ const superCache = await caches.open('super-cache');
     activityList.replaceChildren();
     activities.forEach(activity => {
       var li = document.createElement('li');
-      li.onclick = selectActivityFromList(activity);
+      li.onclick = function(){   
+        map.setCenter(new  google.maps.LatLng(+activity.geometry.coordinates[1], +activity.geometry.coordinates[0]));
+      };
       var img = document.createElement('img');
       img.src = activity.properties.mapIcon;
       li.appendChild(img);
@@ -227,7 +229,7 @@ const superCache = await caches.open('super-cache');
   }
 
   var selectActivityFromList = function(activity) {
-    //console.log(activity.id);
+
   }
 
     // Clear data layer and geoJSON
