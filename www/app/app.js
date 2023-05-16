@@ -218,18 +218,18 @@ const superCache = await caches.open('super-cache');
     activities.forEach(activity => {
       var li = document.createElement('li');
       li.onclick = function(){   
-        map.setCenter(new  google.maps.LatLng(+activity.geometry.coordinates[1], +activity.geometry.coordinates[0]));
+        google.maps.event.trigger(map, 'click', activity);
+        //map.setCenter(new  google.maps.LatLng(+activity.geometry.coordinates[1], +activity.geometry.coordinates[0]));
       };
       var img = document.createElement('img');
       img.src = activity.properties.mapIcon;
+      img.width = "32";
+      img.height = "32";
+      img.padding = "16";
       li.appendChild(img);
       li.appendChild(document.createTextNode(activity.id));
       activityList.appendChild(li);
     })
-  }
-
-  var selectActivityFromList = function(activity) {
-
   }
 
     // Clear data layer and geoJSON
