@@ -40,12 +40,6 @@ li {
   border-bottom-width: 1px;
 }
 
-img {
-  width: 32px;
-  height: 32px;
-  padding: 16px;
-}
-
 .header-flex-container {
   display: flex;
   height: 200px;
