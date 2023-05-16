@@ -35,9 +35,9 @@ ul {
 li {
   padding: 20px;
   background: #CDD7D6;
-  border-width: 2px;
   overflow: hidden;
-  border: 2px solid 102542;
+  border: 2px #fff solid;
+  border-bottom-width: 1px;
 }
 
 img {

@@ -217,15 +217,17 @@ const superCache = await caches.open('super-cache');
     activityList.replaceChildren();
     activities.forEach(activity => {
       var li = document.createElement('li');
+      li.onclick = selectActivityFromList(activity);
       var img = document.createElement('img');
-      img.width = "32";
-      img.height = "32";
-      img.padding = "16";
       img.src = activity.properties.mapIcon;
       li.appendChild(img);
       li.appendChild(document.createTextNode(activity.id));
       activityList.appendChild(li);
     })
+  }
+
+  var selectActivityFromList = function(activity) {
+    //console.log(activity.id);
   }
 
     // Clear data layer and geoJSON
