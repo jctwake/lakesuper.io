@@ -217,9 +217,12 @@ const superCache = await caches.open('super-cache');
     activityList.replaceChildren();
     activities.forEach(activity => {
       var li = document.createElement('li');
-      li.onclick = function(){   
-        google.maps.event.trigger(map, 'click', activity);
-        //map.setCenter(new  google.maps.LatLng(+activity.geometry.coordinates[1], +activity.geometry.coordinates[0]));
+      li.onclick = function() {
+        let feature = map.data.getFeatureById(activity.id);
+        google.maps.event.trigger(map.data, 'click', {
+          feature: feature,
+          latLng: new  google.maps.LatLng(+activity.geometry.coordinates[1], +activity.geometry.coordinates[0]) 
+        });
       };
       var img = document.createElement('img');
       img.src = activity.properties.mapIcon;
