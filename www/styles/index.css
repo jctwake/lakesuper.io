@@ -58,7 +58,7 @@ li {
   flex: 0 0 40px;
   display: block;
   padding-top: 10%;
-  color: orangered;
+  color: #F87060;
 }
 
 #bound-info {
@@ -72,13 +72,13 @@ li {
 }
 
 #bound-info-label {
-  color: blue;
+  color: 102542;
   align-content: center;
   padding: 20px;
 }
 
 #bound-info-image {
-  color: blue;
+  color: 102542;
   padding: 20px;
 }
 
@@ -86,7 +86,7 @@ li {
   height: 30px;
   background-color: white;
   color: black;
-  border: 2px solid #4CAF50;
+  border: 2px solid #F87060;
   border-radius: 8px;
   align-self: center;
 }
