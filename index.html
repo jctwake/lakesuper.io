@@ -23,12 +23,11 @@
     <div class="header"></div>
     <div id="slider"></div>
     <div id="bound-info">
-      <input id="add-activity-button" type="button" onclick="toggleActivityFormVisibility()" value="Add activity">
       <img id="bound-info-image"></img>
       <span id="bound-info-label"></span>
     </div>
   </div>
-  <div id="activity-form">
+  <div id="add-activity-form">
     <form id="location-activity-form" action="">
       Latitude: <input type="text" class="form-control" id="lat" name="lat"><br>
       Longitude: <input type="text" class="form-control" id="lng" name="lng"><br>
@@ -44,6 +43,9 @@
       </ul>
     </div>
   </div>
+  <div id="settings-container">
+    <input id="add-activity-button" type="button" onclick="toggleActivityFormVisibility()" value="Add activity">
+  </div>
 
   <script type="text/javascript"
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBIpzEqrSABHJSCX4fNPZHoP_qpHRr_60&callback=initialize"
@@ -51,7 +53,7 @@
   </script>
   <script>
   var toggleActivityFormVisibility = function() {
-    var activityForm = document.getElementById("activity-form");
+    var activityForm = document.getElementById("add-activity-form");
     activityForm.style.display = (activityForm.style.display === "none") ? "block" : "none";
   }
   var processFormInput = function(event) {
